@@ -35,10 +35,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 		this.uploadFilePath = uploadFilePath;
 	}
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(confirmInterceptor).addPathPatterns(patterns).excludePathPatterns(Arrays.asList("/board"));
-	}
+//	@Override
+//	public void addInterceptors(InterceptorRegistry registry) {
+//		registry.addInterceptor(confirmInterceptor).addPathPatterns(patterns).excludePathPatterns(Arrays.asList("/board"));
+//	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
