@@ -24,10 +24,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	
 	private final Logger logger = LoggerFactory.getLogger(WebMvcConfiguration.class);
 
-	private final List<String> patterns = Arrays.asList("/board/*", "/admin", "/user/*");
+	private final List<String> patterns = Arrays.asList("/post/*", "/admin", "/user/*","/api/guild/*");
 
-	@Autowired
-	private ConfirmInterceptorAJAX confirmInterceptor;
+	
+	//private ConfirmInterceptorAJAX confirmInterceptor;
 
 	private final String uploadFilePath;
 

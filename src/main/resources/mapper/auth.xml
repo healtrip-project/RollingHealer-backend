@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.rollinghealer.auth.model.mapper.AuthMapper">
+
+<resultMap type="userAuthDto" id="AuthDtoMap">
+    <result property="userId" column="user_id"/>
+    <result property="password" column="user_password"/>
+    <result property="grade" column="grade"/>
+    <result property="isDelete" column="is_delete"/>
+</resultMap>
+<resultMap type="userAuthDto" id="rolesList" extends="AuthDtoMap">
+	<collection property="roles" column="grade" ofType="String" javaType="List" select="rolesList"/>
+	
+</resultMap>
+	<select id="test" parameterType="String" resultMap="rolesList">
+		select grade from members 
+		where user_id =#{userId}
+	</select>
+
+	<select id="selectOneAuthenticationByUserName" parameterType="String" resultMap="AuthDtoMap">
+		select user_id,user_password,grade, is_delete from members 
+		where user_id =#{userId}
+	</select>
+</mapper>
