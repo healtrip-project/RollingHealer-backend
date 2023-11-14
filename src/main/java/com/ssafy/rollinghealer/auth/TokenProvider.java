@@ -25,7 +25,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.rollinghealer.auth.model.AccessTokenDto;
+import com.ssafy.rollinghealer.auth.model.RefreshTokenAuthDto;
 import com.ssafy.rollinghealer.auth.model.TokenInfoDto;
+import com.ssafy.rollinghealer.auth.model.service.AuthService;
+import com.ssafy.rollinghealer.auth.model.service.CustomUserDetailService;
 import com.ssafy.rollinghealer.member.UserDto;
 
 import io.jsonwebtoken.Claims;
@@ -39,14 +43,19 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Slf4j
 public class TokenProvider {
 	private String secretKey="testjwtkeysecretkeytesttesttesttest";
 	
-	private long accessTokenExipredTime=60*30L;
-	private long refreshTokenExpiredTime=60*60*24*2L;
-	private static final String AUTHORITIES_KEY = "Authorization";
-
+	private static long accessTokenExipredTime=60*30L;
+	private static long refreshTokenExpiredTime=60*60*24*3L;
+	private final CustomUserDetailService userDetailsService;
+	private final AuthService authService;
+	
+	public TokenProvider(CustomUserDetailService userDetailsService, AuthService authService) {
+		super();
+		this.userDetailsService = userDetailsService;
+		this.authService = authService;
+	}
 	private Key key;
 
 	private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
@@ -56,22 +65,25 @@ public class TokenProvider {
         this.key= Keys.hmacShaKeyFor(keyBytes);
     }
 	
-  public TokenInfoDto createToken(Authentication authentication) {
+	public TokenInfoDto createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
         Date now = new Date();
         
         String accessToken= Jwts.builder()
-        	.subject(authentication.getName())
+        	.subject("access_token")
+        	.claim("user_id",authentication.getName())
         	.issuedAt(now) // 토큰 발행 시간 정보
         	.claim("has_grade", authorities)
         	.expiration(new Date(now.getTime() + accessTokenExipredTime)) // set Expire Time
         	.signWith(key)  // 키
         	.compact();
         
-        String refreshToken= Jwts.builder() 
-        		.expiration(new Date(now.getTime() + refreshTokenExpiredTime)) // set Expire Time
+        String refreshToken= Jwts.builder()
+        		.subject("refresh_token")
+        		.claim("user_id",authentication.getName())
+        		.expiration(new Date(now.getTime() + getRefreshTokenExpiredTime())) // set Expire Time
         		.signWith(key)  // 키
         		.compact();
         
@@ -85,20 +97,23 @@ public class TokenProvider {
   public String resolveToken(HttpServletRequest request) {
       return request.getHeader("Authorization");
   }
-//	public String createAccessToken(String userPk,String userGrade) {
-//        Claims claims = Jwts.claims().subject(userPk).build(); // JWT payload 에 저장되는 정보단위, 보통 여기서 user를 식별하는 값을 넣는다.
-//        Date now = new Date();
-//        return Jwts.builder()
-//                .claims(claims) // 정보 저장
-//                .issuedAt(now) // 토큰 발행 시간 정보
-//                .claim("has_grade", userGrade)
-//                .expiration(new Date(now.getTime() + accessTokenExipredTime)) // set Expire Time
-//                .signWith(key)  // 키
-//                .compact();
-//    }
+	public AccessTokenDto createAccessToken(String userId,Collection<? extends GrantedAuthority> authorities) {
+		String authoritiesString = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+		Date now = new Date();
+		 return AccessTokenDto.builder().accessTokenDto(Jwts.builder()
+		        	.subject("access_token")
+		        	.claim("user_id",userId)
+		        	.issuedAt(now)
+		        	.claim("has_grade", authoritiesString)
+		        	.expiration(new Date(now.getTime() + accessTokenExipredTime)) // set Expire Time
+		        	.signWith(key)
+		        	.compact()).build();
+    }
 	// 토큰에서 회원 정보 추출
-    public Claims parseClaims(String accessToken) {
-        return Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(accessToken).getPayload();
+    public Claims parseClaims(String token) {
+        return Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(token).getPayload();
     }
     
     // JWT 토큰에서 인증 정보 조회
@@ -110,16 +125,15 @@ public class TokenProvider {
                          .map(SimpleGrantedAuthority::new)
                          .collect(Collectors.toList());
 
-         User principal = new User(claims.getSubject(), "", authorities);
+         User principal = new User(claims.get("user_id",String.class), "", authorities);
 
          return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
-	
 
 	public boolean validateToken(String token) {
 		 try {
-	            Jws<Claims> claims = Jwts.parser().verifyWith((SecretKey) key).build().parseSignedClaims(token);
-	            return !claims.getPayload().getExpiration().before(new Date());
+	            Claims claims = parseClaims(token);
+	            return !claims.getExpiration().before(new Date());
 	        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
 	            
 	            logger.info("잘못된 JWT 서명입니다.");
@@ -135,6 +149,51 @@ public class TokenProvider {
 	            logger.info("JWT 토큰이 잘못되었습니다.");
 	        }
 	        return false;
+	}
+	
+	public boolean validateRefreshToken(String token) {
+		try {
+			Claims claims = parseClaims(token);
+			return !claims.getExpiration().before(new Date());
+		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+			
+			logger.info("잘못된 JWT 서명입니다.");
+		} catch (ExpiredJwtException e) {
+			
+			logger.info("만료된 JWT 토큰입니다.");
+			
+		} catch (UnsupportedJwtException e) {
+			
+			logger.info("지원되지 않는 JWT 토큰입니다.");
+		} catch (IllegalArgumentException e) {
+			
+			logger.info("JWT 토큰이 잘못되었습니다.");
+		}
+		return false;
+	}
+	public UserDetails getAuthenticatedUser(String userId) {
+		return userDetailsService.loadUserByUsername(userId);
+	}
+
+	public static int getRefreshTokenExpiredTime() {
+		return (int) (refreshTokenExpiredTime>=Integer.MAX_VALUE?60*60*24*365:refreshTokenExpiredTime);
+	}
+	public boolean isFindRefreshToken(String refreshToken) {
+		Claims claims=parseClaims(refreshToken);
+		RefreshTokenAuthDto refreshTokenAuthDto = RefreshTokenAuthDto.builder()
+				.userId(claims.get("user_id",String.class))
+				.refreshToken(refreshToken)
+				.build();
+		int result;
+		try {
+			result = authService.findRefreshTokenByRefreshToken(refreshTokenAuthDto);
+			return result>0;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.info("refreshToken finder error");
+		}
+		return false;
+		
 	}
 
 }

@@ -64,7 +64,8 @@ public class UserAuthDto implements UserDetails {
  
     @Override
     public boolean isEnabled() {
-        return getIsDelete()==0?true:false;
+    
+        return isDelete==0?true:false;
     }
 
 	

@@ -24,22 +24,8 @@ public class CustomUserDetailService implements UserDetailsService {
     	if(userDetail==null) {
     		throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");    		
     	}
-        return createUserDetails(userDetail);
+    	return userDetail;
+        //return createUserDetails(userDetail);
         
-    }
-    
-    private UserDetails createUserDetails(UserAuthDto userAuthDto) {
-    	System.out.println("????");
-    	System.out.println(userAuthDto);
-    	UserDetails u=User.builder()
-                .username(userAuthDto.getUsername())
-                .password(passwordEncoder.encode(userAuthDto.getPassword()))
-                .roles(userAuthDto.getAuthorities().toArray(new String[1]))
-                .build();
-    	System.out.println(u+"ffffffffffffffff");
-        return User.builder()
-                .username(userAuthDto.getUsername())
-                .password(passwordEncoder.encode(userAuthDto.getPassword()))
-                .build();
     }
 }

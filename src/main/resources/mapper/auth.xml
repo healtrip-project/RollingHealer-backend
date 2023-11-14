@@ -3,23 +3,36 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.rollinghealer.auth.model.mapper.AuthMapper">
 
-<resultMap type="userAuthDto" id="AuthDtoMap">
+<resultMap type="userAuthDto" id="userAuthDtoMap">
     <result property="userId" column="user_id"/>
     <result property="password" column="user_password"/>
     <result property="grade" column="grade"/>
     <result property="isDelete" column="is_delete"/>
 </resultMap>
-<resultMap type="userAuthDto" id="rolesList" extends="AuthDtoMap">
-	<collection property="roles" column="grade" ofType="String" javaType="List" select="rolesList"/>
-	
+<resultMap type="refreshTokenAuthDto" id="refreshTokenAuthDtoMap">
+	<result property="userId" column="user_id"/>
+	<result property="refreshToken" column="refresh_token"/>
+	<result property="expirationDate" column="expiration_date"/>
+	<result property="" column=""/>
 </resultMap>
-	<select id="test" parameterType="String" resultMap="rolesList">
-		select grade from members 
-		where user_id =#{userId}
+	<sql id="whereFindRefreshToken">
+		<where>
+			and user_id=#{userId}
+			and refresh_token = #{refreshToken}
+		</where>
+	</sql>
+	<sql id="whereUserID">
+		<where>
+		and user_id =#{userId}
+		</where>
+	</sql>
+	<select id="selectOneRefreshToekn" parameterType="refreshTokenAuthDto" resultType="int">
+		select count(*) from member_refresh_token 
+		<include refid="whereFindRefreshToken"/>
 	</select>
 
-	<select id="selectOneAuthenticationByUserName" parameterType="String" resultMap="AuthDtoMap">
+	<select id="selectOneAuthenticationByUserName" parameterType="String" resultMap="userAuthDtoMap">
 		select user_id,user_password,grade, is_delete from members 
-		where user_id =#{userId}
+		<include refid="whereUserID"/>
 	</select>
 </mapper>
