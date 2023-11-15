@@ -137,8 +137,9 @@ public class TokenProvider {
 	            
 	            logger.info("잘못된 JWT 서명입니다.");
 	        } catch (ExpiredJwtException e) {
-	            e.printStackTrace();
+	            
 	            logger.info("만료된 JWT 토큰입니다.");
+	            
 	            
 	        } catch (UnsupportedJwtException e) {
 	            

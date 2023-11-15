@@ -1,4 +1,4 @@
-package com.ssafy.rollinghealer.error;
+package com.ssafy.rollinghealer.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,6 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<?> handleNoSuchElementFoundException(Exception e) {
         log.error("에러 발생 {}, : {}",e.getLocalizedMessage(),e.getStackTrace());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("에러");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("에러");
     }
 }

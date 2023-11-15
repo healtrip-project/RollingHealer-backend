@@ -38,7 +38,7 @@ public class MemberController {
 					authService.removeRefreshToken(RefreshTokenAuthDto.builder()
 							.refreshToken(cookie.getValue())
 							.build());
-					return new ResponseEntity<>(HttpStatus.ACCEPTED);
+					return new ResponseEntity<>(HttpStatus.OK);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
