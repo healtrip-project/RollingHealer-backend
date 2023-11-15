@@ -28,9 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.rollinghealer.auth.model.AccessTokenDto;
 import com.ssafy.rollinghealer.auth.model.RefreshTokenAuthDto;
 import com.ssafy.rollinghealer.auth.model.TokenInfoDto;
+import com.ssafy.rollinghealer.auth.model.mapper.AuthMapper;
 import com.ssafy.rollinghealer.auth.model.service.AuthService;
 import com.ssafy.rollinghealer.auth.model.service.CustomUserDetailService;
-import com.ssafy.rollinghealer.member.UserDto;
+import com.ssafy.rollinghealer.member.model.UserDto;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
@@ -40,22 +41,20 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
+@RequiredArgsConstructor
 public class TokenProvider {
 	private String secretKey="testjwtkeysecretkeytesttesttesttest";
 	
-	private static long accessTokenExipredTime=60*30L;
-	private static long refreshTokenExpiredTime=60*60*24*3L;
+	private static long accessTokenExipredTime=60*30L*1000;
+	private static long refreshTokenExpiredTime=60*60*24*3L*1000;
 	private final CustomUserDetailService userDetailsService;
-	private final AuthService authService;
+	private final AuthMapper authMapper;
 	
-	public TokenProvider(CustomUserDetailService userDetailsService, AuthService authService) {
-		super();
-		this.userDetailsService = userDetailsService;
-		this.authService = authService;
-	}
+	
 	private Key key;
 
 	private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
@@ -76,7 +75,7 @@ public class TokenProvider {
         	.claim("user_id",authentication.getName())
         	.issuedAt(now) // 토큰 발행 시간 정보
         	.claim("has_grade", authorities)
-        	.expiration(new Date(now.getTime() + accessTokenExipredTime)) // set Expire Time
+        	.expiration(new Date((now.getTime() + accessTokenExipredTime))) // set Expire Time
         	.signWith(key)  // 키
         	.compact();
         
@@ -107,7 +106,7 @@ public class TokenProvider {
 		        	.claim("user_id",userId)
 		        	.issuedAt(now)
 		        	.claim("has_grade", authoritiesString)
-		        	.expiration(new Date(now.getTime() + accessTokenExipredTime)) // set Expire Time
+		        	.expiration(new Date((now.getTime() + accessTokenExipredTime))) // set Expire Time
 		        	.signWith(key)
 		        	.compact()).build();
     }
@@ -138,7 +137,7 @@ public class TokenProvider {
 	            
 	            logger.info("잘못된 JWT 서명입니다.");
 	        } catch (ExpiredJwtException e) {
-	            
+	            e.printStackTrace();
 	            logger.info("만료된 JWT 토큰입니다.");
 	            
 	        } catch (UnsupportedJwtException e) {
@@ -186,7 +185,7 @@ public class TokenProvider {
 				.build();
 		int result;
 		try {
-			result = authService.findRefreshTokenByRefreshToken(refreshTokenAuthDto);
+			result = authMapper.selectOneRefreshToekn(refreshTokenAuthDto);
 			return result>0;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

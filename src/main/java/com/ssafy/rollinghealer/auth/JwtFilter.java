@@ -45,17 +45,20 @@ public class JwtFilter extends GenericFilterBean {
         	}else {
         		String refreshToken="";
         		Cookie[] cookies = httpServletRequest.getCookies();
-        		for (Cookie cookie : cookies) {
-					if("refresh_token".equals(cookie.getName())) {
-						refreshToken=cookie.getValue();
-					}
-				}
-        		if(StringUtils.hasText(refreshToken) 
-        				&& tokenProvider.validateRefreshToken(refreshToken) 
-        				&& tokenProvider.isFindRefreshToken(refreshToken)) {
-        			UserDetails user = tokenProvider.getAuthenticatedUser(tokenProvider.parseClaims(refreshToken).get("user_id", String.class));
-					httpServletResponse.setHeader(AUTHORIZATION_HEADER, (tokenProvider.createAccessToken(user.getUsername(),user.getAuthorities())).getAccessTokenDto());
+        		if(cookies!=null) {
+        			for (Cookie cookie : cookies) {
+    					if("refresh_token".equals(cookie.getName())) {
+    						refreshToken=cookie.getValue();
+    					}
+    				}
+            		if(StringUtils.hasText(refreshToken) 
+            				&& tokenProvider.validateRefreshToken(refreshToken) 
+            				&& tokenProvider.isFindRefreshToken(refreshToken)) {
+            			UserDetails user = tokenProvider.getAuthenticatedUser(tokenProvider.parseClaims(refreshToken).get("user_id", String.class));
+    					httpServletResponse.setHeader(AUTHORIZATION_HEADER, (tokenProvider.createAccessToken(user.getUsername(),user.getAuthorities())).getAccessTokenDto());
+            		}
         		}
+        		
         	}
         } else {
             logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
