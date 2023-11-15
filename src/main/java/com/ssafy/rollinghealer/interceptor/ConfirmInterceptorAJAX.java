@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.mvc.WebContentInterceptor;
 
-import com.ssafy.rollinghealer.member.UserDto;
+import com.ssafy.rollinghealer.member.model.UserDto;
 
 public class ConfirmInterceptorAJAX extends WebContentInterceptor {
 
