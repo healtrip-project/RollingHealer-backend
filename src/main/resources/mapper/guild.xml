@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ssafy.rollinghealer.guild.model.mapper.GuildMapper">
+
+	<resultMap id="guildResultMap" type="guildDto">
+		<id column="guild_id" property="guildId" />
+		<result column="guild_alias" property="guildAlias" />
+		<result column="guild_name" property="guildName" />
+		<result column="description" property="description" />
+		<result column="goal" property="goal" />
+		<result column="create_at" property="createdAt" />
+		<result column="create_by" property="createdBy" />
+		<result column="is_delete" property="isDelete" />
+		<result column="delete_at" property="deleteAt" />
+		<result column="user_count" property="userCount" />
+		<result column="guild_manager" property="guildManager" />
+		<result column="delete_by" property="deleteBy" />
+	</resultMap>
+
+	<resultMap id="guildPostResultMap" type="guildPostDto">
+		<id column="post_id" property="postId" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+		<result column="create_by" property="createdBy" />
+		<result column="create_at" property="createdAt" />
+		<result column="is_delete" property="isDelete" />
+		<result column="is_usefile" property="isUseFile" />
+		<result column="delete_at" property="deleteAt" />
+		<result column="guild_id" property="guildId" />
+		<result column="guild_board_type" property="guildBoardType" />
+		<result column="delete_by" property="deleteBy" />
+	</resultMap>
+
+	<!-- Guild -->
+
+	<insert id="insertGuild" parameterType="guildDto">
+		INSERT INTO guild (
+			guild_alias,
+			guild_name,
+			description,
+			goal,
+			create_by
+		) VALUES (
+			#{guildAlias},
+			#{guildName},
+			#{description},
+			#{goal},
+			#{createdBy}
+		)
+	</insert>
+
+	<select id="selectGuild" resultMap="guildResultMap">
+		select 
+			guild_id,
+			guild_alias, 
+			guild_name, 
+			description,
+			goal, 
+			create_by, 
+			create_at, 
+			user_count,
+			guild_manager
+		from guild
+		order by guild_name
+	</select>
+
+	<select id="selectByOneGuild" resultMap="guildResultMap">
+		select 
+			guild_id,
+			guild_alias,
+			guild_name, 
+			description,
+			goal, 
+			create_by, 
+			create_at, 
+			user_count, 
+			guild_manager
+		from guild
+		where guild_name = #{guildName}
+	</select>
+
+	<update id="updateGuild" parameterType="guildDto">
+		update guild
+		set 
+			guild_alias = #{guildAlias},
+			guild_name = #{guildName},
+			description = #{description},
+			goal = #{goal}
+		where guild_name = #{guildName}
+	</update>
+
+
+
+
+
+	<!-- Guild Post  -->
+
+	<insert id="insertGuildPost" parameterType="guildPostDto">
+		 INSERT INTO guild_post (
+	        title,
+	        content,
+	        is_usefile,
+	        guild_id
+	    ) VALUES (
+	        #{title},
+	        #{content},
+	        #{isUseFile},
+	        #{guildId}
+	    )
+	</insert>
+	
+	<select id="selectGuildPost" resultMap="guildPostResultMap" >
+		SELECT
+	        post_id,
+	        title,
+	        content,
+	        create_by,
+	        create_at,
+	        is_delete,
+	        is_usefile,
+	        delete_at,
+	        guild_id,
+	        guild_board_type,
+	        delete_by
+	    FROM guild_post
+	    WHERE guild_id = #{guildId} and is_delete = 0
+	    ORDER BY create_at DESC
+	</select>
+	
+	<select id="selectByOneGuildPost" resultMap="guildPostResultMap">
+		SELECT
+	        post_id,
+	        title,
+	        content,
+	        create_by,
+	        create_at,
+	        is_delete,
+	        is_usefile,
+	        delete_at,
+	        guild_id,
+	        guild_board_type,
+	        delete_by
+	    FROM guild_post
+	    WHERE post_id = #{postId}
+	</select>
+	
+	<update id="updateGuildPost" parameterType="guildPostDto">
+		UPDATE guild_post
+	    SET
+	        title = #{title},
+	        content = #{content},
+	        is_usefile = #{isUseFile}
+	    WHERE post_id = #{postId}
+	</update>
+	
+
+	<update id="deleteGuildPost" parameterType="guildPostDto">
+		UPDATE guild_post
+	    SET
+	        is_delete = 1,
+	        delete_at = now()
+	    WHERE post_id = #{postId}
+	</update>
+	
+</mapper>
