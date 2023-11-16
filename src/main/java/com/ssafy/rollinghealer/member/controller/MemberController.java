@@ -28,25 +28,27 @@ public class MemberController {
 	private final AuthService authService;
 	private final MemberService memberSerive;
 	@GetMapping("/logout")
-    public ResponseEntity<?> authJoin(HttpServletRequest request){
+    public ResponseEntity<?> logout(HttpServletRequest request){
     	
     	Cookie[] cookies =request.getCookies();
-
-    	for (Cookie cookie : cookies) {
-			if("refresh_token".equals(cookie.getName())) {
-				try {
-					authService.removeRefreshToken(RefreshTokenAuthDto.builder()
-							.refreshToken(cookie.getValue())
-							.build());
-					return new ResponseEntity<>(HttpStatus.OK);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-			}
-		}
+    	if(cookies!=null) {
+    		
+    		for (Cookie cookie : cookies) {
+    			if("refresh_token".equals(cookie.getName())) {
+    				try {
+    					authService.removeRefreshToken(RefreshTokenAuthDto.builder()
+    							.refreshToken(cookie.getValue())
+    							.build());
+    					return new ResponseEntity<>(HttpStatus.OK);
+    				} catch (Exception e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+    				
+    				
+    			}
+    		}
+    	}
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	
     }

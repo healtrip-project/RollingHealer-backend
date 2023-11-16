@@ -50,7 +50,7 @@ public class AuthController {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
     @PostMapping("/refresh")
-    public ResponseEntity<AccessTokenDto> requestAccessToken(@RequestBody LoginDto loginDto, HttpServletResponse response, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> requestAccessToken(HttpServletResponse response, HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) {
         log.debug("엑세스토큰 재발급");
         
         String refreshToken="";
@@ -66,7 +66,7 @@ public class AuthController {
     				&& tokenProvider.isFindRefreshToken(refreshToken)) {
     			UserDetails user = tokenProvider.getAuthenticatedUser(tokenProvider.parseClaims(refreshToken).get("user_id", String.class));
     			AccessTokenDto accessTokenDto=(tokenProvider.createAccessToken(user.getUsername(),user.getAuthorities()));
-				httpServletResponse.setHeader(JwtFilter.AUTHORIZATION_HEADER, accessTokenDto.getAccessTokenDto());
+				httpServletResponse.setHeader(JwtFilter.AUTHORIZATION_HEADER, "Bearer "+accessTokenDto.getAccessTokenDto());
 				return new ResponseEntity<>(accessTokenDto, HttpStatus.CREATED);
     		}
 		}
@@ -84,8 +84,10 @@ public class AuthController {
         Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
         cookie.setHttpOnly(true);
         cookie.setMaxAge(TokenProvider.getRefreshTokenExpiredTime());
+        cookie.setPath("/");
 //        cookie.setSecure(true); // https가 아니므로 아직 안됨
         response.addCookie(cookie);
+        
         
         // tokenDto를 이용해 response body에도 넣어서 리턴
         return new ResponseEntity<>(AccessTokenDto.builder()
@@ -107,6 +109,7 @@ public class AuthController {
 	        Cookie cookie = new Cookie("refresh_token", tokenInfoDto.getRefreshToken());
 	        cookie.setHttpOnly(true);
 	        cookie.setMaxAge(TokenProvider.getRefreshTokenExpiredTime());
+	        cookie.setPath("/");
 //	        cookie.setSecure(true); // https가 아니므로 아직 안됨
 	        response.addCookie(cookie);
 	        return new ResponseEntity<>(AccessTokenDto.builder()
