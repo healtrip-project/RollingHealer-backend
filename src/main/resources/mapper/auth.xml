@@ -16,7 +16,7 @@
 </resultMap>
 	<sql id="whereFindRefreshToken">
 		<where>
-		<if test="userId !=null and userId !==''">
+		<if test="userId !=null and userId !=''">
 			and user_id=#{userId}
 		</if>
 			and refresh_token = #{refreshToken}
