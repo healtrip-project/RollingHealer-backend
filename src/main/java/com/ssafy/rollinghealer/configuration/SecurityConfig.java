@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .antMatchers("/api/auth/**").permitAll() //인증 컨트롤러 접근
                 .antMatchers(HttpMethod.GET,"/api/post/*").permitAll() //게시판(기본 컬럼) api 조회 요청
                 .antMatchers(HttpMethod.GET,"/api/guild/*").permitAll() //길드 api 조회 요청
+                .antMatchers(HttpMethod.GET,"/api/place/admin/fetchdata").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider)); // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig class 적용

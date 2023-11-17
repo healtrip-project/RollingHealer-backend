@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.rollinghealer.place.model.mapper.PlaceMapper">
+
+<resultMap id="placeInfoDtoResultMap" type="placeInfoDto">
+    <id property="content_id" column="content_id"/>
+    <result property="title" column="title"/>
+    <result property="addr1" column="addr1"/>
+    <result property="addr2" column="addr2"/>
+    <result property="area_code" column="area_code"/>
+    <result property="content_type_id" column="content_type_id"/>
+    <result property="latitude" column="latitude"/>
+    <result property="longitude" column="longitude"/>
+    <result property="mlevel" column="mlevel"/>
+    <result property="tel" column="tel"/>
+    <result property="first_image" column="first_image"/>
+    <result property="first_image2" column="first_image2"/>
+    <result property="cat1" column="cat1"/>
+    <result property="cat2" column="cat2"/>
+    <result property="cat3" column="cat3"/>
+    <result property="book_tour" column="book_tour"/>
+    <result property="update_date" column="modified_time"/>
+    <result property="create_date" column="created_time"/>
+    <result property="is_custom" column="is_custom"/>
+    <result property="sigungucode" column="sigungucode"/>
+</resultMap>
+<insert id="insertPlaceInfoDtoList" parameterType="List">
+        INSERT INTO place_info 
+        (
+        title, 
+        addr1, 
+        addr2, 
+        area_code, 
+        content_type_id, 
+        latitude, 
+        longitude, 
+        mlevel, 
+        tel, 
+        first_image, 
+        first_image2, 
+        cat1, 
+        cat2, 
+        cat3, 
+        book_tour, 
+        update_date, 
+        create_date, 
+        content_id,
+        is_custom, 
+        sigungucode
+        )
+        VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+    (
+            #{item.title},
+            #{item.addr1},
+            #{item.addr2},
+            #{item.area_code},
+            #{item.content_type_id},
+            #{item.latitude}, 
+            #{item.longitude}, 
+            #{item.mlevel}, 
+            #{item.tel}, 
+            #{item.first_image},
+            #{item.first_image2}, 
+            #{item.cat1}, 
+            #{item.cat2}, 
+            #{item.cat3}, 
+            #{item.book_tour},
+            STR_TO_DATE(#{item.update_date},'%Y%m%d%H%i%s'),
+            STR_TO_DATE(#{item.create_date},'%Y%m%d%H%i%s'),
+            #{item.content_id},
+            #{item.is_custom},
+            #{item.sigungucode}
+     )
+    </foreach>
+    AS new
+        ON DUPLICATE KEY UPDATE
+            title =new.title, 
+            addr1 =new.addr1, 
+            addr2 =new.addr2,
+            area_code =new.area_code, 
+            content_type_id =new.content_type_id,
+            latitude =new.latitude, 
+            longitude =new.longitude, 
+            mlevel =new.mlevel,
+            tel =new.tel, 
+            first_image =new.first_image,
+            first_image2 =new.first_image2, 
+            cat1 =new.cat1,
+            cat2 =new.cat2, 
+            cat3 =new.cat3, 
+            book_tour =new.book_tour,
+            update_date = new.update_date,
+            create_date = new.create_date,
+            is_custom =new.is_custom,
+            sigungucode =new.sigungucode;
+    
+</insert>
+</mapper>

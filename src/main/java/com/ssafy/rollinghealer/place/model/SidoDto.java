@@ -1,4 +1,4 @@
-package com.ssafy.rollinghealer.place;
+package com.ssafy.rollinghealer.place.model;
 
 import lombok.Getter;
 import lombok.Setter;
