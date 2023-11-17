@@ -32,7 +32,7 @@
         SELECT * 
         FROM post 
         WHERE is_delete = 0
-        order by create_at
+        order by create_at desc
     </select>
 	
 	 <select id="getPostById" resultMap="postResultMap">
