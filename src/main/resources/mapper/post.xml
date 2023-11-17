@@ -21,9 +21,9 @@
 
 	<insert id="createPost" parameterType="postDto">
 		INSERT INTO post (
-			title, content, is_usefile
+			title, content, is_usefile, create_by
 		) VALUES (	
-			#{title}, #{content}, #{isUseFile}
+			#{title}, #{content}, #{isUseFile}, #{createBy}
 		)
     </insert>
 

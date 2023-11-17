@@ -36,6 +36,10 @@ public class GuildServiceImpl implements GuildService {
 	public GuildDto detailGuild(String guildName) {
 		return guildMapper.selectByOneGuild(guildName);
 	}
+	@Override
+	public void deleteGuild(GuildDto guildDto) {
+		guildMapper.deleteGuild(guildDto);
+	}
 
 	@Override
 	public void guildPostWrite(GuildPostDto guildPostDto) {
@@ -61,6 +65,7 @@ public class GuildServiceImpl implements GuildService {
 	public void deleteGuildPost(GuildPostDto guildPostDto) {
 		guildMapper.deleteGuildPost(guildPostDto);
 	}
+
 
 	
 

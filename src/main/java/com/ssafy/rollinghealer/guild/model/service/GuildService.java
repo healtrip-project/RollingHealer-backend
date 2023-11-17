@@ -15,6 +15,8 @@ public interface GuildService {
 	void modifyGuild(GuildDto guildDto);
 
 	GuildDto detailGuild(String guildName);
+	
+	void deleteGuild(GuildDto guildDto);
 
 	void guildPostWrite(GuildPostDto guildPostDto);
 

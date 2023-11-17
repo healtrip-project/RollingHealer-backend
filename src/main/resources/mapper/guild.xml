@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper
-	namespace="com.ssafy.rollinghealer.guild.model.mapper.GuildMapper">
+<mapper namespace="com.ssafy.rollinghealer.guild.model.mapper.GuildMapper">
 
 	<resultMap id="guildResultMap" type="guildDto">
 		<id column="guild_id" property="guildId" />
@@ -33,6 +32,13 @@
 		<result column="delete_by" property="deleteBy" />
 	</resultMap>
 
+	<sql id="whereGuildAlias">
+		<where>
+			and guild_alias = #{guildAlias}
+		</where>
+	</sql>
+
+
 	<!-- Guild -->
 
 	<insert id="insertGuild" parameterType="guildDto">
@@ -41,13 +47,16 @@
 			guild_name,
 			description,
 			goal,
-			create_by
+			create_by, 
+			guild_manager
+			
 		) VALUES (
 			#{guildAlias},
 			#{guildName},
 			#{description},
 			#{goal},
-			#{createdBy}
+			#{createdBy},
+			#{guildManager}
 		)
 	</insert>
 
@@ -63,6 +72,7 @@
 			user_count,
 			guild_manager
 		from guild
+		where is_delete = 0
 		order by guild_name
 	</select>
 
@@ -78,19 +88,26 @@
 			user_count, 
 			guild_manager
 		from guild
-		where guild_name = #{guildName}
+		<include refid="whereGuildAlias"/>
 	</select>
 
 	<update id="updateGuild" parameterType="guildDto">
 		update guild
 		set 
-			guild_alias = #{guildAlias},
 			guild_name = #{guildName},
 			description = #{description},
 			goal = #{goal}
-		where guild_name = #{guildName}
+		<include refid="whereGuildAlias"/>
 	</update>
 
+	<update id="deleteGuild" parameterType="guildDto">
+		update guild
+		set 
+		  	is_delete = 1,
+	        delete_at = now(),
+	        delete_by = #{deleteBy}
+		<include refid="whereGuildAlias"/>
+	</update>
 
 
 
@@ -102,12 +119,14 @@
 	        title,
 	        content,
 	        is_usefile,
-	        guild_id
+	        guild_id,
+	        create_by
 	    ) VALUES (
 	        #{title},
 	        #{content},
 	        #{isUseFile},
-	        #{guildId}
+	        #{guildId},
+	        #{createdBy}
 	    )
 	</insert>
 	

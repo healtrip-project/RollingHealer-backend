@@ -16,7 +16,9 @@ public interface GuildMapper {
 
 	void updateGuild(GuildDto guildDto);
 
-	GuildDto selectByOneGuild(String guildName);
+	GuildDto selectByOneGuild(String guildAlias);
+	
+	void deleteGuild(GuildDto guildDto);
 
 	void insertGuildPost(GuildPostDto guildPostDto);
 
