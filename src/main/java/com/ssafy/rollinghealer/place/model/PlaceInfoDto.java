@@ -1,5 +1,7 @@
 package com.ssafy.rollinghealer.place.model;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -19,9 +21,9 @@ public class PlaceInfoDto {
 	@JsonProperty("contenttypeid")
 	private int content_type_id;
 	@JsonProperty("mapx")
-	private double latitude;
+	private BigDecimal latitude;
 	@JsonProperty("mapy")
-	private double longitude;
+	private BigDecimal longitude;
 	private String mlevel;
 	private String tel;
 	@JsonProperty("firstimage")

@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +38,7 @@ public class PlaceServiceImpl implements PlaceService {
 
 	@Override
 	@Transactional
+	@Async("threadPoolTaskExecutor")
 	public void fetchPlaceInfoDataByAreaCode(AreaBasedList1ApiQueryParams params) throws Exception {
 		// TODO Auto-generated method stub
 		if(params.getNumOfRows()!=0) {
@@ -53,8 +55,6 @@ public class PlaceServiceImpl implements PlaceService {
 					.queryParam("arrange",params.getArrange())
 					.encode()
 					.buildAndExpand("areaBasedList1",serviceKey);
-			log.debug(serviceKey);
-			log.debug(uriComponent.toUriString());
 					
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "application/json");
@@ -77,12 +77,10 @@ public class PlaceServiceImpl implements PlaceService {
 //		    HashMap<String,Object> o = mapper.readValue(in, typeRef); 
 //			System.out.println(o);
 			ResponseEntity<?> response  = restTemplate.exchange(uriComponent.toUri(),HttpMethod.GET,entity, String.class);
-			log.debug(response.getHeaders().toString());
-			log.debug(response.getBody().toString());
-			JsonNode result=mapper.readTree(response.getBody().toString());
 
+			JsonNode result=mapper.readTree(response.getBody().toString());
 			List<PlaceInfoDto> placeInfoDtoList = mapper.readValue(result.get("response").get("body").get("items").get("item").toString(),new TypeReference<List<PlaceInfoDto>>() {});
-			log.debug(placeInfoDtoList.toString());
+//			System.out.println(result);
 			placeMapper.insertPlaceInfoDtoList(placeInfoDtoList);
 			
 		}
