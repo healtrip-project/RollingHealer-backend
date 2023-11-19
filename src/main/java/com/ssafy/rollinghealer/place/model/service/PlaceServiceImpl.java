@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.rollinghealer.place.model.AreaBasedList1ApiQueryParams;
 import com.ssafy.rollinghealer.place.model.PlaceInfoDto;
+import com.ssafy.rollinghealer.place.model.PlaceInfoExtraDto;
+import com.ssafy.rollinghealer.place.model.PlaceSearchDto;
 import com.ssafy.rollinghealer.place.model.mapper.PlaceMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -86,4 +88,41 @@ public class PlaceServiceImpl implements PlaceService {
 		}
 	}
 
+	@Override
+	public PlaceInfoDto getPlaceInfo(String contentId) {
+	    return placeMapper.selectOnePlaceInfo(contentId);
+	}
+	
+	@Override
+	@Transactional
+	public List<PlaceInfoDto> searchPlaceInfoList(PlaceSearchDto placeSearchDto) {
+	    return placeMapper.selectPlaceInfoList(placeSearchDto);
+	}
+	
+	@Override
+	@Transactional
+	public void updatePlaceInfo(PlaceInfoDto placeInfoDto) {
+	    placeMapper.updatePlaceInfo(placeInfoDto);
+	}
+	
+	@Override
+	public void changePlaceInfoDeleteStatus(PlaceInfoExtraDto placeInfoExtraDto) {
+	    placeMapper.updateDeleteStatus(placeInfoExtraDto);
+	}
+	
+	@Override
+	@Transactional
+	public void deletePlaceInfoOneMonthfromDeleteAt() {
+	    placeMapper.deletePlaceInfoExtraOneMonthfromDeleteAt();
+	    placeMapper.deletePlaceInfoOneMonthfromDeleteAt();
+	}
+	
+	@Override
+	@Transactional
+	public void registCustomPlaceInfo(PlaceInfoDto placeInfoDto) {
+	    placeMapper.insertCustomPlaceInfo(placeInfoDto);
+	    log.debug(placeInfoDto.getExtra_info().toString());
+	    placeMapper.insertCustomPlaceInfoExtra(placeInfoDto.getExtra_info());
+	}
+	
 }
