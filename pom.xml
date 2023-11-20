@@ -17,6 +17,7 @@
 		<java.version>1.8</java.version>
 		<guava.version>32.1.2-jre</guava.version>
 		<springfox.version>3.0.0</springfox.version>
+		<scrimage.version>4.1.1</scrimage.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -120,6 +121,17 @@
 		    <groupId>net.coobird</groupId>
 		    <artifactId>thumbnailator</artifactId>
 		    <version>0.4.20</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.sksamuel.scrimage</groupId>
+		    <artifactId>scrimage-core</artifactId>
+		    <version>${scrimage.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.sksamuel.scrimage</groupId>
+		    <artifactId>scrimage-webp</artifactId>
+		    <version>${scrimage.version}</version>
 		</dependency>
 		
 		

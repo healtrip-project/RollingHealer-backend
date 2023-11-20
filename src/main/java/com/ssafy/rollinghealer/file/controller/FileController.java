@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import com.ssafy.rollinghealer.file.model.FileInfoDto;
+import com.ssafy.rollinghealer.file.model.FileInfoResourceDto;
+import com.ssafy.rollinghealer.file.model.FileSaveResponseDto;
 import com.ssafy.rollinghealer.file.model.service.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,33 +35,38 @@ public class FileController {
 	private final FileService fileService;
 
 	@PostMapping("/upload")
-	public ResponseEntity<List<String>> uploadFile(@RequestParam("file") MultipartFile[] files) {
-		// 파일 정보 생성
-		// fileInfo 필드 설정
-		// ...
+	public ResponseEntity<List<FileSaveResponseDto>> uploadFile(@RequestParam("file") MultipartFile[] files) throws Exception {
 
-		List<String> list = null;
-		try {
-			list = fileService.saveFileInfo(files);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// 파일 정보 저장
+		List<FileSaveResponseDto> list = null;
+		list = fileService.saveFileInfo(files);
 
 		return ResponseEntity.ok(list);
 	}
 	
-	@GetMapping("/download/{fileIdx}")
-	public ResponseEntity<?> downloadFile(@PathVariable int fileIdx) throws Exception {
-		FileInfoDto fileInfoDto = fileService.getFileInfo(fileIdx);
-		Resource file = fileService.downloadFile(fileInfoDto);
-		return ResponseEntity.badRequest().build();
-//		return ResponseEntity.ok()
-//		        .contentType(MediaType.parseMediaType(fileInfoDto.getFileType()))
-//		        .charset(StandardCharsets.UTF_8)
-//		        .body(file);
+	@GetMapping("/image/{fileName}")
+	public ResponseEntity<Resource> downloadImage(@PathVariable String fileName) {
+		try {
+			return ResponseEntity.ok(fileService.downloadImage(fileName));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ResponseEntity.badRequest().build();
+		}
+		
+	}
+	@GetMapping("/download/{fileName}")
+	public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+		try {
+			FileInfoResourceDto fileInfoRescourceDto=fileService.downloadFile(fileName);
+			String encodedFileName = UriUtils.encode(fileInfoRescourceDto.getFileInfo().getFileOriginName(), StandardCharsets.UTF_8);
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + encodedFileName + "\"")
+					.body(fileInfoRescourceDto.getResource());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ResponseEntity.badRequest().build();
+		}
 		
 	}
 	
