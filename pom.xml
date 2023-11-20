@@ -134,7 +134,6 @@
 		    <version>${scrimage.version}</version>
 		</dependency>
 		
-		
 	</dependencies>
 
 	<build>
