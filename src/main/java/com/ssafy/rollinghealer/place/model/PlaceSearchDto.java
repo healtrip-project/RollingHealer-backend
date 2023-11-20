@@ -1,17 +1,20 @@
 package com.ssafy.rollinghealer.place.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 @Getter
-@Setter
 @ToString
+@Setter
+@Builder
 public class PlaceSearchDto {
-	private String type;
-	private int contentId;
-	private int contentTypeId;
 	private String title;
-	private String addr1;
-	private String addr2;
-	private int sidoCode;
+	private Integer content_type_id;
+	private Integer sidocode;
+	private Integer page;
+	private Integer start;
+	private Integer size;
+	
+	
 }

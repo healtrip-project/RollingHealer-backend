@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlaceInfoDto {
+	private String content_id;
 	private String title;
 	private String addr1;
 	private String addr2;
@@ -40,9 +42,16 @@ public class PlaceInfoDto {
 	@JsonProperty("createdtime")
 	private String create_date;
 	@JsonProperty("contentid")
-	private int content_id;
 	private int is_custom;
 	@JsonProperty("sigungucode")
 	private int sigungucode;
+	private PlaceInfoExtraDto extra_info;
+	
+//	public String getDescription() {
+//		return extra_info.getDescription();
+//	}
+//	public String getCreate_by() {
+//		return extra_info.getCreate_by();
+//	}
 
 }
