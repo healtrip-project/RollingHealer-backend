@@ -9,7 +9,7 @@ import com.ssafy.rollinghealer.file.model.FileSearchDto;
 
 @Mapper
 public interface FileMapper {
-	FileInfoDto selectOneFileInfo(int fileIdx);
+	FileInfoDto selectOneFileInfo(String fileName);
 	List<FileInfoDto> selectFileInfoList(FileSearchDto fileSearchDto);
 	void insertFileInfo(FileInfoDto fileInfoDto);
 }

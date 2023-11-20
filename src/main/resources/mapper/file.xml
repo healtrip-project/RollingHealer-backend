@@ -60,9 +60,9 @@
  <include refid="whereSearchFileInfoList"></include>
 </select>
 
-<select id="selectOneFileInfo" parameterType="int" resultMap="FileInfoDtoMap">
- SELECT * FROM file_table
- WHERE file_idx = #{fileIdx}
+<select id="selectOneFileInfo" parameterType="String" resultMap="FileInfoDtoMap">
+ SELECT * FROM file_info
+ WHERE file_name = #{fileName}
 </select>
 
 </mapper>

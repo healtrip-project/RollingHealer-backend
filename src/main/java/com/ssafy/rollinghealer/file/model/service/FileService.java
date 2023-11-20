@@ -6,12 +6,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.rollinghealer.file.model.FileInfoDto;
+import com.ssafy.rollinghealer.file.model.FileInfoResourceDto;
+import com.ssafy.rollinghealer.file.model.FileSaveResponseDto;
 import com.ssafy.rollinghealer.file.model.FileSearchDto;
 
 public interface FileService {
 
-	List<String> saveFileInfo(MultipartFile[] files) throws Exception;
-	FileInfoDto getFileInfo(int fileIdx);
+	List<FileSaveResponseDto> saveFileInfo(MultipartFile[] files) throws Exception;
 	List<FileInfoDto> FileInfoList(FileSearchDto fileSearchDto);
-	Resource downloadFile(FileInfoDto fileInfoDto) throws Exception;
+//	Resource downloadFile(FileInfoDto fileInfoDto) throws Exception;
+	FileInfoResourceDto downloadFile(String fileName) throws Exception;
+	Resource downloadImage(String fileName) throws Exception;
+	FileInfoDto getFileInfo(String fileName);
 }

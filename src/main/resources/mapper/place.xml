@@ -25,10 +25,10 @@
     <result property="create_date" column="created_time"/>
     <result property="is_custom"  column="is_custom"/>
     <result property="sigungucode" column="sigungucode"/>
- 	<association property="extra_info" autoMapping="true" column="content_id" javaType="placeInfoExtraDto" select="selectOnePlaceInfoExtra"/>
- 	<!-- <discriminator javaType="int" column="is_custom">
- 	<case value="1">
- 		<association property="extra_info" autoMapping="true" column="content_id" select="selectOnePlaceInfoExtra" >
+ 	<!--  
+ 		<association property="extra_info"  autoMapping="true" column="content_id" notNullColumn="is_custom_info" javaType="placeInfoExtraDto" select="selectOnePlaceInfoExtra"/>
+	-->
+ 		<association property="extra_info" javaType="placeInfoExtraDto" columnPrefix="extra_" >
 	 	<id property="content_id" column="content_id"/>
 		  <result property="description" column="description"/>
 		  <result property="create_by" column="create_by"/>
@@ -36,12 +36,10 @@
 		  <result property="delete_at" column="delete_at"/>
 		  <result property="create_at" column="create_at"/>
 	 	</association>
- 	</case>
- 	</discriminator> -->
  	
 </resultMap>
 
-<resultMap id="placeInfoExtraDtoMap" type="placeInfoExtraDto">
+<resultMap id="placeInfoExtraDtoMap" type="placeInfoExtraDto" >
   <id property="content_id" column="content_id"/>
   <result property="description" column="description"/>
   <result property="create_by" column="create_by"/>
@@ -49,6 +47,7 @@
   <result property="delete_at" column="delete_at"/>
   <result property="create_at" column="create_at"/>
 </resultMap>
+
 
 <insert id="insertPlaceInfoDtoList" parameterType="List">
         INSERT INTO place_info 
@@ -199,59 +198,79 @@
 <sql id="whereSearchPlaceInfoList">
 	 <where>
        <if test="title != null and title != ''">
-           AND title LIKE CONCAT('%', #{title}, '%')
+           AND ${alias1}title LIKE CONCAT('%', #{title}, '%')
        </if>
        <if test="content_type_id != null">
-           AND content_type_id = #{content_type_id}
+           AND ${alias1}content_type_id = #{content_type_id}
        </if>
        <if test="sidocode != null and sidocode !=0">
-           AND area_code = #{sidocode}
+           AND ${alias1}area_code = #{sidocode}
        </if>
    </where>
 </sql>
 
 <select id="selectOnePlaceInfo" parameterType="String" resultMap="placeInfoDtoMap">
    SELECT 
-   		title, 
-        addr1, 
-        addr2, 
-        area_code, 
-        content_type_id, 
-        latitude, 
-        longitude, 
-        tel, 
-        first_image, 
-        first_image2, 
-        cat1, 
-        book_tour, 
-        update_date, 
-        create_date, 
-        content_id,
-        sigungucode
-   FROM place_info
+   		place.title, 
+        place.addr1, 
+        place.addr2, 
+        place.area_code, 
+        place.content_type_id, 
+        place.latitude, 
+        place.longitude, 
+        place.tel, 
+        place.first_image, 
+        place.first_image2, 
+        place.cat1, 
+        place.book_tour, 
+        place.update_date, 
+        place.create_date, 
+        place.content_id,
+        place.sigungucode,
+        (select if(place.is_custom=0,Null,place.is_custom)) as is_custom_info,
+		extra.content_id as extra_content_id,
+		extra.description as extra_description,
+		extra.create_by as extra_create_by,
+		extra.is_delete as extra_is_delete,
+		extra.delete_at as extra_delete_at,
+		extra.create_at as extra_create_at
+    FROM place_info place
+   LEFT JOIN place_info_extra extra
+   ON place.content_id = extra.content_id
    WHERE content_id = #{content_id}
 </select>
 
 <select id="selectPlaceInfoList" parameterType="placeSearchDto"  resultMap="placeInfoDtoMap">
    SELECT 
-   		title, 
-        addr1, 
-        addr2, 
-        area_code, 
-        content_type_id, 
-        latitude, 
-        longitude, 
-        tel, 
-        first_image, 
-        first_image2, 
-        cat1, 
-        book_tour, 
-        update_date, 
-        create_date, 
-        content_id,
-        sigungucode
-    FROM place_info 
-   <include refid="whereSearchPlaceInfoList"/>
+   		place.title, 
+        place.addr1, 
+        place.addr2, 
+        place.area_code, 
+        place.content_type_id, 
+        place.latitude, 
+        place.longitude, 
+        place.tel, 
+        place.first_image, 
+        place.first_image2, 
+        place.cat1, 
+        place.book_tour, 
+        place.update_date, 
+        place.create_date, 
+        place.content_id,
+        place.sigungucode,
+        (select if(place.is_custom=0,Null,place.is_custom)) as is_custom_info,
+		extra.content_id as extra_content_id,
+		extra.description as extra_description,
+		extra.create_by as extra_create_by,
+		extra.is_delete as extra_is_delete,
+		extra.delete_at as extra_delete_at,
+		extra.create_at as extra_create_at
+    FROM place_info place
+   LEFT JOIN place_info_extra extra
+   ON place.content_id = extra.content_id
+   <include refid="whereSearchPlaceInfoList">
+   	<property name="alias1" value=""/>
+   </include>
    LIMIT #{start}, #{size}
    
    
@@ -259,7 +278,13 @@
 
 
 <select id="selectOnePlaceInfoExtra" parameterType="String" resultMap="placeInfoExtraDtoMap">
-	select * <!-- content_id,description, create_by,is_delete,delete_at,create_at  -->
+	select 
+	content_id,
+	description,
+	create_by,
+	is_delete,
+	delete_at,
+	create_at
 	from place_info_extra
 	where content_id = #{content_id}
 </select>
