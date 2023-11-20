@@ -4,7 +4,7 @@
 	
 	
 <mapper namespace="com.ssafy.rollinghealer.file.model.mapper.FileMapper" >
-<resultMap type="com.example.FileInfoDto" id="FileInfoDtoMap">
+<resultMap type="FileInfoDto" id="FileInfoDtoMap">
   <result column="file_idx" property="fileIdx" />
   <result column="upload_by" property="uploadBy" />
   <result column="file_group_id" property="fileGroupId" />
