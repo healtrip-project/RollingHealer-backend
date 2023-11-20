@@ -73,13 +73,19 @@ public class FileServiceImpl implements FileService {
 		    int height=originHeight;
 		    int width=originWidth;
 		    ImmutableImage image= ImmutableImage.loader().fromStream(file.getInputStream());
-		    if(height>640) {
-	    	   double resizeRate=(double)(height/width);
-	    	   height=640;
+		    double resizeRate=0.5;
+		    if(height>640 || width>1280) {
+		    	if(height>width) {
+		    		resizeRate=(double)(height/width);
+		    		height=640;
+		    	}else if(width>height) {
+		    		resizeRate=(double)(width/height);
+		    		width=1280;
+		    	}
 	    	   double resizeWidth= (height/resizeRate);
-	    	   image.scale(resizeRate, ScaleMethod.Bicubic);
 	    	   width=(int)resizeWidth;
 	    	}
+		    image.scale(resizeRate, ScaleMethod.Bicubic);
 
 			
 			try {
