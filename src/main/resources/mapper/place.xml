@@ -48,15 +48,6 @@
   <result property="create_at" column="create_at"/>
 </resultMap>
 
-<!-- <select id="selectPlaceInfoWithExtra" parameterType="String" resultMap="placeInfoWithExtraMap">
-   SELECT 
-        place.*,
-        extra.*
-   FROM place_info p
-   LEFT JOIN place_info_extra e ON p.content_id = e.content_id
-   WHERE p.content_id = #{content_id}
-</select> -->
-
 
 <insert id="insertPlaceInfoDtoList" parameterType="List">
         INSERT INTO place_info 
