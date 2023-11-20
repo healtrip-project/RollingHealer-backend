@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,10 +36,9 @@ import net.coobird.thumbnailator.Thumbnails;
 @RequiredArgsConstructor
 @Slf4j
 public class FileServiceImpl implements FileService {
-	@Value("${file.path.uplo ad-images}")
-	private final String storageLocation;
-
-	final String[] PERMISSION_FILE_EXT_ARR = {"GIF", "JPEG", "JPG", "PNG", "BMP", "PDF", "MP4"};
+	@Value("${file.path.upload-images}")
+	private String storageLocation;
+	private static String[] PERMISSION_FILE_EXT_ARR = {"GIF", "JPEG", "JPG", "PNG", "BMP", "PDF", "MP4"};
 	private final FileMapper fileMapper;
 	
 	public String generateUUID() {
