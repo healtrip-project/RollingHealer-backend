@@ -30,5 +30,7 @@ public interface GuildMapper {
 
 	void deleteGuildPost(GuildPostDto guildPostDto);
 
+	int countGuildAlias(String guildAlias);
+
 
 }

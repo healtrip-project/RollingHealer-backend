@@ -29,6 +29,12 @@ public class GuildController {
 		this.guildService = guildService;
 	}
 
+	// Guild alias 검사
+	@GetMapping("/checkalias/{guildAlias}")
+    public ResponseEntity<?> checkGuildAliasAvailability(@PathVariable String guildAlias) {
+        boolean isAvailable = guildService.isGuildAliasAvailable(guildAlias);
+        return ResponseEntity.ok(isAvailable);
+    }
 	
 	/////////////// "guild" - 길드 리스트, 생성, 수정 ///////////////////////
 	@PostMapping
@@ -99,6 +105,15 @@ public class GuildController {
 		guildService.deleteGuildPost(guildPostDto);
 		return ResponseEntity.ok("OK");
 	}
+	
+	
+	
+	// guild members
+	
+//	@GetMapping("{guildId}/guildmembers")
+//	public ResponseEntity<GuildDto> getGuildmMembers(@PathVariable int guildId) {
+//	
+//	}
 	
 	
 }

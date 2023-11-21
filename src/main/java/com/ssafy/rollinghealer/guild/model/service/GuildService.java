@@ -28,5 +28,7 @@ public interface GuildService {
 
 	void deleteGuildPost(GuildPostDto guildPostDto);
 
+	boolean isGuildAliasAvailable(String guildAlias);
+
 
 }

@@ -66,6 +66,12 @@ public class GuildServiceImpl implements GuildService {
 		guildMapper.deleteGuildPost(guildPostDto);
 	}
 
+	@Override
+	public boolean isGuildAliasAvailable(String guildAlias) {
+		int count = guildMapper.countGuildAlias(guildAlias);
+        return count == 0;
+	}
+
 
 	
 

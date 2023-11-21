@@ -40,6 +40,15 @@
 
 
 	<!-- Guild -->
+	
+	 <!-- GuildAlias 유효성검사 -->   
+	<select id="countGuildAlias" resultType="int">
+	    select count(*)
+	    from guild
+	    where guild_alias = #{guildAlias}
+	</select>
+	
+	
 
 	<insert id="insertGuild" parameterType="guildDto">
 		INSERT INTO guild (
@@ -73,7 +82,7 @@
 			guild_manager
 		from guild
 		where is_delete = 0
-		order by guild_name
+		order by create_at desc
 	</select>
 
 	<select id="selectByOneGuild" resultMap="guildResultMap">
