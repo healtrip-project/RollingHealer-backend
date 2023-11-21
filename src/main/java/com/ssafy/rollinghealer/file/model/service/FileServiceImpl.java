@@ -55,14 +55,23 @@ public class FileServiceImpl implements FileService {
 	@Transactional
 	public List<FileSaveResponseDto> saveFileInfoList(List<MultipartFile> files) throws Exception {
 		List<FileSaveResponseDto> FileList=new ArrayList<>();
-		Path folderPath = Paths.get(storageLocation).normalize();	
-		log.debug(folderPath.toString());
-        if(Files.exists(folderPath) && Files.isDirectory(folderPath)){
+		Path folderPath = Paths.get(storageLocation).toAbsolutePath().normalize();	
+		log.debug("출력위치"+folderPath.toString());
+        if((Files.exists(folderPath) && Files.isDirectory(folderPath))){
+        	System.out.println("이거보셈");
             log.debug("폴더가 존재합니다.");
         }else{
-            Files.createDirectory(folderPath);
-            log.debug("폴더가 생성되었습니다. :{}",folderPath);
+        	try {
+				
+        		Files.createDirectories(folderPath);
+        		log.debug("폴더가 생성되었습니다. :{}",folderPath);
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.debug("폴더 생성 실패 : {} ",e.getMessage());
+			}
         }
+        
+        
 		for (MultipartFile file : files) {
 			String fileName = generateUUID();
 			String[] fileOriginNameInfo=file.getOriginalFilename().split("\\.");
@@ -124,8 +133,8 @@ public class FileServiceImpl implements FileService {
 				fileMapper.insertFileInfo(fileInfo);
 				FileList.add(FileSaveResponseDto.builder()
 						.fileOriginName(fileInfo.getFileOriginName())
-						.fileImage("file/image/"+fileInfo.getFileName())
-						.fileDownload("file/download/"+fileInfo.getFileName())
+						.fileImage("/file/image/"+fileInfo.getFileName())
+						.fileDownload("/file/download/"+fileInfo.getFileName())
 						.build());
 				
 			} catch (IOException e) {
