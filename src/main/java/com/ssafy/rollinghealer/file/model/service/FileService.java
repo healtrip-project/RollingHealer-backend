@@ -12,10 +12,11 @@ import com.ssafy.rollinghealer.file.model.FileSearchDto;
 
 public interface FileService {
 
-	List<FileSaveResponseDto> saveFileInfo(MultipartFile[] files) throws Exception;
+	List<FileSaveResponseDto> saveFileInfoList(List<MultipartFile> files) throws Exception;
 	List<FileInfoDto> FileInfoList(FileSearchDto fileSearchDto);
 //	Resource downloadFile(FileInfoDto fileInfoDto) throws Exception;
 	FileInfoResourceDto downloadFile(String fileName) throws Exception;
 	Resource downloadImage(String fileName) throws Exception;
 	FileInfoDto getFileInfo(String fileName);
+	FileSaveResponseDto saveFileInfo(MultipartFile file) throws Exception;
 }

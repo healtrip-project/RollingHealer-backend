@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,28 +53,40 @@ public class FileServiceImpl implements FileService {
 	}
 	
 	@Transactional
-	public List<FileSaveResponseDto> saveFileInfo(MultipartFile[] files) throws Exception {
+	public List<FileSaveResponseDto> saveFileInfoList(List<MultipartFile> files) throws Exception {
 		List<FileSaveResponseDto> FileList=new ArrayList<>();
-		Path folderPath = Paths.get(storageLocation).toAbsolutePath().normalize();
+		Path folderPath = Paths.get(storageLocation).normalize();	
+		log.debug(folderPath.toString());
         if(Files.exists(folderPath) && Files.isDirectory(folderPath)){
             log.debug("폴더가 존재합니다.");
         }else{
             Files.createDirectory(folderPath);
             log.debug("폴더가 생성되었습니다. :{}",folderPath);
         }
-
 		for (MultipartFile file : files) {
 			String fileName = generateUUID();
-			String fileType=file.getOriginalFilename().split("\\.")[1];
+			String[] fileOriginNameInfo=file.getOriginalFilename().split("\\.");
+			String fileType=fileOriginNameInfo[1];
 			String resizingFileName = "s_".concat(fileName);
 			String filePath =folderPath.resolve(fileName).toString();
 			log.debug("파일 저장 경로 :{}", filePath);
-			BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+		
+			try(InputStream inputStream=file.getInputStream();
+				InputStream inputStream2=file.getInputStream();	
+					InputStream inputStream3=file.getInputStream();	
+				) {
+
+			Files.copy(inputStream,  Paths.get(storageLocation).resolve(fileName),
+					StandardCopyOption.REPLACE_EXISTING);
+
+			BufferedImage bufferedImage = ImageIO.read(inputStream2);
 		    int originWidth = bufferedImage.getWidth();
 		    int originHeight = bufferedImage.getHeight();
 		    int height=originHeight;
 		    int width=originWidth;
-		    ImmutableImage image= ImmutableImage.loader().fromStream(file.getInputStream());
+		    bufferedImage.flush();
+		    
+		    ImmutableImage image= ImmutableImage.loader().fromStream(inputStream3);
 		    double resizeRate=0.5;
 		    if(height>640 || width>1280) {
 		    	if(height>width) {
@@ -88,9 +102,7 @@ public class FileServiceImpl implements FileService {
 		    image.scale(resizeRate, ScaleMethod.Bicubic);
 
 			
-			try {
-				Files.copy(file.getInputStream(),  Paths.get(storageLocation).resolve(fileName),
-						StandardCopyOption.REPLACE_EXISTING);
+				
 				image.output(WebpWriter.DEFAULT, Paths.get(storageLocation).resolve(resizingFileName));
 //				Thumbnails
 //				.of(file.getInputStream())
@@ -99,10 +111,12 @@ public class FileServiceImpl implements FileService {
 //				.toFile(Paths.get(storageLocation).resolve(resizingFileName).toString());
 				
 				FileInfoDto fileInfo=FileInfoDto.builder()
-						.fileOriginName(file.getOriginalFilename())
+						.fileOriginName(fileOriginNameInfo[0])
 						.fileName(fileName)
 						.fileSize(file.getSize())
+						.uploadBy(SecurityContextHolder.getContext().getAuthentication().getName())
 						.isImg(isImage(file.getOriginalFilename() != null?"":file.getOriginalFilename())?1:0)
+						.fileGroupId(null)
 						.fileType(fileType)
 						.uploadPath(Paths.get(storageLocation).toString())
 						.build();
@@ -110,22 +124,25 @@ public class FileServiceImpl implements FileService {
 				fileMapper.insertFileInfo(fileInfo);
 				FileList.add(FileSaveResponseDto.builder()
 						.fileOriginName(fileInfo.getFileOriginName())
-						.fileImage("/image/"+fileInfo.getFileName())
-						.fileDownload("/download/"+fileInfo.getFileName())
+						.fileImage("file/image/"+fileInfo.getFileName())
+						.fileDownload("file/download/"+fileInfo.getFileName())
 						.build());
+				
 			} catch (IOException e) {
+
 				throw new Exception("Could not store file " + file.getOriginalFilename(), e);
-			}
+			} 
+			
 		}
-		return null;
+		return FileList;
 	}
 	 @Override
 	 public Resource downloadImage(String fileName) throws Exception {
 		 FileInfoDto fileInfoDto=fileMapper.selectOneFileInfo(fileName);
 	   try {
-	     Path filePath = Paths.get(fileInfoDto.getUploadPath()+File.separator+"s_"+fileInfoDto.getFileName()+".webp");
+	     Path filePath = Paths.get(fileInfoDto.getUploadPath()+File.separator+"s_"+fileInfoDto.getFileName());
 	     Resource resource = new UrlResource(filePath.toUri());
-
+	     
 	     if (resource.exists() || resource.isReadable()) {
 	       return resource;
 	     } else {
@@ -143,7 +160,7 @@ public class FileServiceImpl implements FileService {
 	 public FileInfoResourceDto downloadFile(String fileName) throws Exception {
 		 FileInfoDto fileInfoDto=fileMapper.selectOneFileInfo(fileName);
 		 try {
-			 Path filePath = Paths.get(fileInfoDto.getUploadPath()+File.separator+fileInfoDto.getFileName()+"."+fileInfoDto.getFileType());
+			 Path filePath = Paths.get(fileInfoDto.getUploadPath()+File.separator+fileInfoDto.getFileName());
 			 Resource resource = new UrlResource(filePath.toUri());
 			 
 			 if (resource.exists() || resource.isReadable()) {
@@ -176,6 +193,73 @@ public FileInfoDto getFileInfo(String fileName) {
 @Override
 public List<FileInfoDto> FileInfoList(FileSearchDto fileSearchDto) {
 	return fileMapper.selectFileInfoList(fileSearchDto);
+}
+
+
+@Override
+public FileSaveResponseDto saveFileInfo(MultipartFile file) throws Exception {
+	Path folderPath = Paths.get(storageLocation).toAbsolutePath().normalize();
+    if(Files.exists(folderPath) && Files.isDirectory(folderPath)){
+        log.debug("폴더가 존재합니다.");
+    }else{
+        Files.createDirectory(folderPath);
+        log.debug("폴더가 생성되었습니다. :{}",folderPath);
+    }
+		String fileName = generateUUID();
+		Files.copy(file.getInputStream(),  Paths.get(storageLocation).resolve(fileName),
+				StandardCopyOption.REPLACE_EXISTING);
+		String fileType=file.getOriginalFilename().split("\\.")[1];
+		String resizingFileName = "s_".concat(fileName);
+		String filePath =folderPath.resolve(fileName).toString();
+		log.debug("파일 저장 경로 :{}", filePath);
+		BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+	    int originWidth = bufferedImage.getWidth();
+	    int originHeight = bufferedImage.getHeight();
+	    int height=originHeight;
+	    int width=originWidth;
+	    ImmutableImage image= ImmutableImage.loader().fromStream(file.getInputStream());
+	    double resizeRate=0.5;
+	    if(height>1280 || width>1920) {
+	    	if(height>width) {
+	    		resizeRate=(double)(height/width);
+	    		height=1280;
+	    	}else if(width>height) {
+	    		resizeRate=(double)(width/height);
+	    		width=1920;
+	    	}
+    	   double resizeWidth= (height/resizeRate);
+    	   width=(int)resizeWidth;
+    	}
+	    image.scale(resizeRate, ScaleMethod.Bicubic);
+
+		
+		try {
+			
+			image.output(WebpWriter.DEFAULT, Paths.get(storageLocation).resolve(resizingFileName));
+//			Thumbnails
+//			.of(file.getInputStream())
+//			.size(width,height)
+//			.outputFormat("jpg")
+//			.toFile(Paths.get(storageLocation).resolve(resizingFileName).toString());
+			
+			FileInfoDto fileInfo=FileInfoDto.builder()
+					.fileOriginName(file.getOriginalFilename())
+					.fileName(fileName)
+					.fileSize(file.getSize())
+					.isImg(isImage(file.getOriginalFilename() != null?"":file.getOriginalFilename())?1:0)
+					.fileType(fileType)
+					.uploadPath(Paths.get(storageLocation).toString())
+					.build();
+			
+			fileMapper.insertFileInfo(fileInfo);
+			return FileSaveResponseDto.builder()
+					.fileOriginName(fileInfo.getFileOriginName())
+					.fileImage("/image/"+fileInfo.getFileName())
+					.fileDownload("/download/"+fileInfo.getFileName())
+					.build();
+		} catch (IOException e) {
+			throw new Exception("Could not store file " + file.getOriginalFilename(), e);
+		}
 }
 
 }

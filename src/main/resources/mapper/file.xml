@@ -8,7 +8,7 @@
   <result column="file_idx" property="fileIdx" />
   <result column="upload_by" property="uploadBy" />
   <result column="file_group_id" property="fileGroupId" />
-  <result column="file_origin_name" property="fileOriginName" />
+  <result column="file_originname" property="fileOriginName" />
   <result column="file_name" property="fileName" />
   <result column="file_type" property="fileType" />
   <result column="create_at" property="createAt" />
@@ -20,10 +20,10 @@
 </resultMap>
 
 <insert id="insertFileInfo" parameterType="fileInfoDto" >
- INSERT INTO file_table (
+ INSERT INTO file_info (
    upload_by, 
    file_group_id, 
-   file_origin_name, 
+   file_originname, 
    file_name, 
    file_type, 
    file_size, 
@@ -33,8 +33,8 @@
  
     #{uploadBy}, #{fileGroupId}, #{fileOriginName}, #{fileName}, #{fileType}, #{fileSize}, #{isImg}, #{uploadPath}
  )
- <selectKey keyProperty="fileIdx" keyColumn="fileIdx" order="AFTER">
- 	select last_insert_id() as fileIdx
+ <selectKey keyProperty="fileIdx" keyColumn="file_idx" order="AFTER" resultType="int">
+ 	select last_insert_id() as file_idx
  </selectKey>
 </insert>
 
@@ -50,7 +50,7 @@
 	   AND is_delete = #{isDelete}
 	 </if>
 	 <if test="fileOriginName != null">
-	   AND file_origin_name = #{fileOriginName}
+	   AND file_originname = #{fileOriginName}
 	 </if>
 	</where>
 </sql>

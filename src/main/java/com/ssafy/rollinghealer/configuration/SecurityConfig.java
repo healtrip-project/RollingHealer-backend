@@ -57,6 +57,8 @@ public class SecurityConfig {
                 .antMatchers("/api/place/*").permitAll() //장소 api 조회 요청
                 .antMatchers(HttpMethod.GET,"/api/guild/*").permitAll() //길드 api 조회 요청
                 .antMatchers(HttpMethod.GET,"/api/place/admin/fetchdata").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/file/image/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/file/download/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider)); // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig class 적용

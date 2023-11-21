@@ -11,7 +11,7 @@ import lombok.ToString;
 public class FileInfoDto {
 	   private int fileIdx;
 	   private String uploadBy;
-	   private int fileGroupId;
+	   private Integer fileGroupId;
 	   private String fileOriginName;
 	   private String fileName;
 	   private String fileType;

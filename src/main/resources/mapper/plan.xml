@@ -49,7 +49,7 @@
    </where>
 </sql>
 
-<select id="selectOnePlan" parameterMap="int" resultMap="planDtoResult">
+<select id="selectOnePlan" parameterType="int" resultMap="planDtoResult">
   SELECT 
 	  p.plan_id, 
 	  p.plan_title, 
