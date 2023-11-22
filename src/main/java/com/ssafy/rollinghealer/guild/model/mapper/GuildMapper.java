@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.rollinghealer.guild.model.GuildDto;
 import com.ssafy.rollinghealer.guild.model.GuildPostDto;
+import com.ssafy.rollinghealer.member.model.UserDto;
 
 @Mapper
 public interface GuildMapper {
@@ -32,5 +33,9 @@ public interface GuildMapper {
 
 	int countGuildAlias(String guildAlias);
 
+	void updateMemberGuild(int guildId, String userId);
+    void incrementGuildUserCount(int guildId);
+
+	List<UserDto> guildMemberList(int guildId);
 
 }

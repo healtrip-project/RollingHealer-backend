@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.rollinghealer.guild.model.GuildDto;
 import com.ssafy.rollinghealer.guild.model.GuildPostDto;
 import com.ssafy.rollinghealer.guild.model.mapper.GuildMapper;
+import com.ssafy.rollinghealer.member.model.UserDto;
 
 @Service
 public class GuildServiceImpl implements GuildService {
@@ -20,6 +21,19 @@ public class GuildServiceImpl implements GuildService {
 	@Override
 	public void makeGuild(GuildDto guildDto) {
 		guildMapper.insertGuild(guildDto);
+		int guildId = guildDto.getGuildId();
+		String userId = guildDto.getCreatedBy();
+		System.out.println("////////");
+		System.out.println("////////");
+		System.out.println("////////");
+		System.out.println("////////");
+		System.out.println(guildId + " " + userId);
+		try {
+			guildMapper.updateMemberGuild(guildId, userId);
+			guildMapper.incrementGuildUserCount(guildId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -70,6 +84,22 @@ public class GuildServiceImpl implements GuildService {
 	public boolean isGuildAliasAvailable(String guildAlias) {
 		int count = guildMapper.countGuildAlias(guildAlias);
         return count == 0;
+	}
+
+	@Override
+	public void joinGuild(int guildId, String userId) {
+		// TODO Auto-generated method stub
+		try {
+			guildMapper.updateMemberGuild(guildId, userId);
+			guildMapper.incrementGuildUserCount(guildId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<UserDto> guildMemberList(int guild) {
+		return guildMapper.guildMemberList(guild);
 	}
 
 

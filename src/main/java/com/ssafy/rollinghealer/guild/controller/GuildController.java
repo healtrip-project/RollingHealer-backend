@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.rollinghealer.guild.model.GuildDto;
 import com.ssafy.rollinghealer.guild.model.GuildPostDto;
 import com.ssafy.rollinghealer.guild.model.service.GuildService;
+import com.ssafy.rollinghealer.member.model.UserDto;
 
 @CrossOrigin
 @RestController
@@ -28,7 +29,20 @@ public class GuildController {
 	public GuildController(GuildService guildService) {
 		this.guildService = guildService;
 	}
+	// Guild Join
+	@PutMapping("{guildId}/join/{userId}")
+	public ResponseEntity<String> joinGuild(@PathVariable int guildId, @PathVariable String userId) {
+	    guildService.joinGuild(guildId, userId);
+	    return ResponseEntity.ok("Joined guild successfully");
+	}
+	
+	// Guild member select
+	@GetMapping("{guildId}/members")
+	public ResponseEntity<List<UserDto>> guildMemberList(@PathVariable int guildId) {
+        return ResponseEntity.ok().body(guildService.guildMemberList(guildId));
+    }
 
+	
 	// Guild alias 검사
 	@GetMapping("/checkalias/{guildAlias}")
     public ResponseEntity<?> checkGuildAliasAvailability(@PathVariable String guildAlias) {
@@ -107,13 +121,6 @@ public class GuildController {
 	}
 	
 	
-	
-	// guild members
-	
-//	@GetMapping("{guildId}/guildmembers")
-//	public ResponseEntity<GuildDto> getGuildmMembers(@PathVariable int guildId) {
-//	
-//	}
 	
 	
 }

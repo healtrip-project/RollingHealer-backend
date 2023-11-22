@@ -32,6 +32,26 @@
 		<result column="delete_by" property="deleteBy" />
 	</resultMap>
 
+<resultMap id="userResultMap" type="userDto">
+    <id column="idx" property="idx" />
+    <result column="user_id" property="userId" />
+    <result column="user_password" property="userPassword" />
+    <result column="user_name" property="userName" />
+    <result column="user_nickname" property="userNickname" />
+    <result column="grade" property="grade"/>
+    <result column="user_exp" property="userExp" />
+    <result column="user_thumbnail_file_url" property="userThumbnailFileUrl" />
+    <result column="is_delete" property="isDelete" />
+    <result column="update_at" property="updatedAt" />
+    <result column="create_at" property="createdAt" />
+    <result column="user_email_id" property="userEmailId" />
+    <result column="user_email_domain" property="userEmailDomain" />
+    <result column="description" property="description" />
+    <result column="guild_id" property="guildId" />
+</resultMap>
+
+
+
 	<sql id="whereGuildAlias">
 		<where>
 			and guild_alias = #{guildAlias}
@@ -191,5 +211,24 @@
 	        delete_at = now()
 	    WHERE post_id = #{postId}
 	</update>
+	
+	<!-- guild join -->
+	<update id="updateMemberGuild">
+	    UPDATE members 
+	    SET guild_id = #{guildId} 
+	    WHERE user_id = #{userId}
+	</update>
+
+	<update id="incrementGuildUserCount">
+	    UPDATE guild
+	    SET user_count = user_count + 1
+	    WHERE guild_id = #{guildId}
+	</update>
+	
+	<select id="guildMemberList" resultMap="userResultMap">
+		select * 
+		from members
+		where guild_id = #{guildId}
+	</select>
 	
 </mapper>

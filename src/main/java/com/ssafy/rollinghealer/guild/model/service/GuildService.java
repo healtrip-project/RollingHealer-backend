@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ssafy.rollinghealer.guild.model.GuildDto;
 import com.ssafy.rollinghealer.guild.model.GuildPostDto;
+import com.ssafy.rollinghealer.member.model.UserDto;
 
 
 public interface GuildService {
@@ -29,6 +30,11 @@ public interface GuildService {
 	void deleteGuildPost(GuildPostDto guildPostDto);
 
 	boolean isGuildAliasAvailable(String guildAlias);
+
+	void joinGuild(int guildId, String userId);
+
+
+	List<UserDto> guildMemberList(int guildId);
 
 
 }
