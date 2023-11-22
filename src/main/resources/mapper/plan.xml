@@ -29,6 +29,14 @@
    <result property="order" column="order"/>
 </resultMap>
 
+<sql id="setUpdatePlan">
+<set>
+           <if test="planTitle != null and planTitle !==''">plan_title = #{planTitle},</if>
+           <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+           <if test="isPublic != null">is_public = #{isPublic},</if>
+       </set>
+</sql>
+
 <sql id="whereSearchPlanDtoList">
 <where>
        <if test="createBy != null and createBy !=''">
@@ -117,4 +125,36 @@ SELECT
 <!--   	<property name="alias2" value="pi."/> -->
   </include>
 </select>
+
+<insert id="insertPlan" parameterType="PlanDto">
+       INSERT INTO plan (plan_id, plan_title, start_date, create_by, item_count, is_delete, delete_at, create_at, is_public)
+       VALUES (#{planId}, #{planTitle}, #{startDate}, #{createBy}, #{itemCount}, #{isDelete}, #{deleteAt}, #{createAt}, #{isPublic})
+   </insert>
+
+   <insert id="insertPlanItem" parameterType="PlanItemDto">
+       INSERT INTO plan_item (plan_item_idx, content_id, plan_id, memo, order)
+       VALUES (#{planItemIdx}, #{contentId}, #{planId}, #{memo}, #{order})
+   </insert>
+
+   <update id="updatePlan" parameterType="PlanDto">
+       UPDATE plan
+       <include refid="setUpdatePlan"></include>
+       WHERE plan_id = #{planId}
+   </update>
+
+<insert id="insertPlanItem" parameterType="PlanDto">
+      INSERT INTO plan_item (plan_item_idx, content_id, plan_id, memo, order)
+      VALUES 
+  <foreach collection="planItemList" item="planItemDto" open="(" close=")" separator=",">
+      #{planItemDto.planItemIdx}, #{planItemDto.contentId}, #{planId}, #{planItemDto.memo}, #{planItemDto.order}
+  </foreach>
+</insert>
+
+<delete id="deletePlan" parameterType="PlanDto">
+   DELETE FROM plan WHERE plan_id = #{planId}
+</delete>
+
+<delete id="deletePlanItem" parameterType="PlanItemDto">
+   DELETE FROM plan_item WHERE plan_item_idx = #{planItemIdx}
+</delete>
 </mapper>

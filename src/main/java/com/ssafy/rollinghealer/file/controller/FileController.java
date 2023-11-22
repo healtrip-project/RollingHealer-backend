@@ -57,8 +57,8 @@ public class FileController {
 			FileInfoResourceDto fileInfoRescourceDto=fileService.downloadFile(fileName);
 			String encodedFileName = UriUtils.encode(fileInfoRescourceDto.getFileInfo().getFileOriginName(), StandardCharsets.UTF_8);
 			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + encodedFileName+"."+fileInfoRescourceDto.getFileInfo().getFileType() + "\"")
-					.header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+					.header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=" + encodedFileName+"."+fileInfoRescourceDto.getFileInfo().getFileType())
+					.header(HttpHeaders.CONTENT_TYPE, "image/"+fileInfoRescourceDto.getFileInfo().getFileType())
 					.body(fileInfoRescourceDto.getResource());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
