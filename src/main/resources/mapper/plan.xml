@@ -17,7 +17,7 @@
    	<result property="contentId" column="content_id"/>
    	<result property="planId" column="plan_id"/>
    	<result property="memo" column="memo"/>
-   	<result property="order" column="order"/>
+   	<result property="order" column="plan_item_order"/>
    </collection>
 </resultMap>
 
@@ -26,7 +26,7 @@
    <result property="contentId" column="content_id"/>
    <result property="planId" column="plan_id"/>
    <result property="memo" column="memo"/>
-   <result property="order" column="order"/>
+   <result property="order" column="plan_item_order"/>
 </resultMap>
 
 <sql id="setUpdatePlan">
@@ -94,7 +94,7 @@
 	  pi.content_id as item_content_id, 
 	  pi.plan_id as item_plan_id, 
 	  pi.memo as item_memo, 
-	  pi.order as item_order
+	  pi.plan_item_order as item_order
   FROM plan p
   LEFT JOIN plan_item pi
   ON p.plan_id = pi.content_id
@@ -116,7 +116,7 @@ SELECT
 	  pi.content_id as item_content_id, 
 	  pi.plan_id as item_plan_id, 
 	  pi.memo as item_memo, 
-	  pi.order as item_order
+	  pi.plan_item_order as item_order
   FROM plan p
   LEFT JOIN plan_item pi
   ON p.plan_id = pi.plan_id
@@ -127,12 +127,15 @@ SELECT
 </select>
 
 <insert id="insertPlan" parameterType="PlanDto">
-       INSERT INTO plan ( plan_title, start_date, create_by, item_count, is_delete, delete_at, create_at, is_public)
-       VALUES ( #{planTitle}, #{startDate}, #{createBy}, #{itemCount}, #{isDelete}, #{deleteAt}, #{createAt}, #{isPublic})
+       INSERT INTO plan ( plan_title, start_date, create_by, item_count, is_public)
+       VALUES ( #{planTitle}, #{startDate}, #{createBy}, #{itemCount}, #{isPublic})
+       <selectKey keyProperty="planId" keyColumn="plan_key" resultType="int">
+       	select last_insert_id() as plan_key
+       </selectKey>
    </insert>
 
    <insert id="insertPlanItem" parameterType="PlanItemDto">
-       INSERT INTO plan_item ( content_id, plan_id, memo, order)
+       INSERT INTO plan_item ( content_id, plan_id, memo, plan_item_order)
        VALUES ( #{contentId}, #{planId}, #{memo}, #{order})
    </insert>
 
@@ -142,11 +145,17 @@ SELECT
        WHERE plan_id = #{planId}
    </update>
 
-<insert id="insertPlanItemList" parameterType="PlanDto">
-      INSERT INTO plan_item ( content_id, plan_id, memo, order)
+<insert id="insertPlanItemList" parameterType="PlanDto" >
+
+      INSERT INTO plan_item ( content_id, plan_id, memo, plan_item_order )
       VALUES 
-  <foreach collection="planItemList" item="planItemDto" open="(" close=")" separator=",">
-       #{planItemDto.contentId}, #{planId}, #{planItemDto.memo}, #{planItemDto.order}
+  <foreach collection="planItemList" item="planItemDto" index="index" separator=",">
+  (
+   #{planItemDto.contentId}
+  ,#{planId} 
+  ,#{planItemDto.memo} 
+  ,#{planItemDto.order}
+  ) 
   </foreach>
 </insert>
 
