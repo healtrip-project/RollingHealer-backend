@@ -31,6 +31,9 @@
 	<include refid="userDetailSelect"></include>
 	<include refid="whereUserId"></include>
 </select>
+<select id="selectUserList"  resultMap="userDtoMap">
+<include refid="userDetailSelect"></include>
+</select>
 <update id="updateUserThumbnail" parameterType="userDto">
    UPDATE members
    SET user_thumbnail_file_url = #{userThumbnailFileUrl}

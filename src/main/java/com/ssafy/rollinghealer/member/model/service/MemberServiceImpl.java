@@ -1,5 +1,7 @@
 package com.ssafy.rollinghealer.member.model.service;
 
+import java.util.List;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -34,4 +36,10 @@ public class MemberServiceImpl implements MemberService {
 	public void updateUserThumbnail(UserDto userDto) {
 	      memberMapper.updateUserThumbnail(userDto);
   }
+
+	@Override
+	public List<UserDto> userList() {
+		
+		return memberMapper.selectUserList();
+	}
 }

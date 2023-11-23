@@ -1,5 +1,7 @@
 package com.ssafy.rollinghealer.member.controller;
 
+import java.util.List;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,6 +61,13 @@ public class MemberController {
 		UserDto userInfo=memberService.userInfo(userId);
 		
 		return new ResponseEntity<UserDto>(userInfo,HttpStatus.OK);
+	}
+	@GetMapping
+	public ResponseEntity<List<UserDto>> userList() throws Exception{
+		
+		List<UserDto> userList=memberService.userList();
+		
+		return new ResponseEntity<List<UserDto>>(userList,HttpStatus.OK);
 	}
 	
 	@PostMapping("/{userId}/uploadthumbnail")
