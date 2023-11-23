@@ -16,4 +16,6 @@ public interface PostService {
 
     void deletePost(int postId);
 
+	List<PostDto> getAllPostsByGuildId(int guildId);
+
 }

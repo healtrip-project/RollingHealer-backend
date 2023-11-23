@@ -34,6 +34,16 @@
         WHERE is_delete = 0
         order by create_at desc
     </select>
+    
+    <select id="getAllPostsByGuildId" resultMap="postResultMap">
+	    SELECT p.*, m.user_id AS create_by
+	    FROM post p
+	    JOIN members m ON p.create_by = m.user_id
+	    WHERE p.is_delete = 0
+	    AND m.guild_id = #{guildId}
+	    ORDER BY p.create_at DESC
+	</select>
+
 	
 	 <select id="getPostById" resultMap="postResultMap">
         SELECT * 
