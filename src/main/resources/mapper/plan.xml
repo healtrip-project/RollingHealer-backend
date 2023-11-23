@@ -127,13 +127,13 @@ SELECT
 </select>
 
 <insert id="insertPlan" parameterType="PlanDto">
-       INSERT INTO plan (plan_id, plan_title, start_date, create_by, item_count, is_delete, delete_at, create_at, is_public)
-       VALUES (#{planId}, #{planTitle}, #{startDate}, #{createBy}, #{itemCount}, #{isDelete}, #{deleteAt}, #{createAt}, #{isPublic})
+       INSERT INTO plan ( plan_title, start_date, create_by, item_count, is_delete, delete_at, create_at, is_public)
+       VALUES ( #{planTitle}, #{startDate}, #{createBy}, #{itemCount}, #{isDelete}, #{deleteAt}, #{createAt}, #{isPublic})
    </insert>
 
    <insert id="insertPlanItem" parameterType="PlanItemDto">
-       INSERT INTO plan_item (plan_item_idx, content_id, plan_id, memo, order)
-       VALUES (#{planItemIdx}, #{contentId}, #{planId}, #{memo}, #{order})
+       INSERT INTO plan_item ( content_id, plan_id, memo, order)
+       VALUES ( #{contentId}, #{planId}, #{memo}, #{order})
    </insert>
 
    <update id="updatePlan" parameterType="PlanDto">
@@ -142,11 +142,11 @@ SELECT
        WHERE plan_id = #{planId}
    </update>
 
-<insert id="insertPlanItem" parameterType="PlanDto">
-      INSERT INTO plan_item (plan_item_idx, content_id, plan_id, memo, order)
+<insert id="insertPlanItemList" parameterType="PlanDto">
+      INSERT INTO plan_item ( content_id, plan_id, memo, order)
       VALUES 
   <foreach collection="planItemList" item="planItemDto" open="(" close=")" separator=",">
-      #{planItemDto.planItemIdx}, #{planItemDto.contentId}, #{planId}, #{planItemDto.memo}, #{planItemDto.order}
+       #{planItemDto.contentId}, #{planId}, #{planItemDto.memo}, #{planItemDto.order}
   </foreach>
 </insert>
 

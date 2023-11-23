@@ -82,7 +82,7 @@ public class PlaceController {
 		
 	@GetMapping("/search")
 	public ResponseEntity<List<PlaceInfoDto>> searchPlaceInfoList(@ModelAttribute PlaceSearchDto placeSearchDto) {
-		placeSearchDto.setSize(SizeConstant.LIST_SIZE*10);
+		placeSearchDto.setSize(SizeConstant.LIST_SIZE*5);
 		placeSearchDto.setStart(0);
 		List<PlaceInfoDto> placeInfoDtoList = placeService.searchPlaceInfoList(placeSearchDto);
 		return ResponseEntity.ok(placeInfoDtoList);
