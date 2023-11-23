@@ -38,6 +38,11 @@ public class PostServiceImpl implements PostService {
     public void deletePost(int postId) {
         postMapper.deletePost(postId);
     }
+
+	@Override
+	public List<PostDto> getAllPostsByGuildId(int guildId) {
+        return postMapper.getAllPostsByGuildId(guildId);
+	}
 	
 	
 }

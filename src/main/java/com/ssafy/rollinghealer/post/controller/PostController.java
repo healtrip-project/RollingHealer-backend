@@ -28,6 +28,12 @@ public class PostController {
     public ResponseEntity<List<PostDto>> getAllPosts() {
         return ResponseEntity.ok().body(postService.getAllPosts());
     }
+    
+    @GetMapping("guild/{guildId}")
+    public ResponseEntity<List<PostDto>> getAllPostsByGuildId(@PathVariable int guildId) {
+        return ResponseEntity.ok().body(postService.getAllPostsByGuildId(guildId));
+    }
+    
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPostById(@PathVariable int postId) {

@@ -18,6 +18,8 @@ public interface PostMapper {
     void updatePost(PostDto postDto);
 
     void deletePost(int postId);
+
+	List<PostDto> getAllPostsByGuildId(int guildId);
 	
 	
 }
