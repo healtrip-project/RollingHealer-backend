@@ -65,7 +65,7 @@ public class MemberController {
 	  public ResponseEntity<?> updateUserThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("userId") String userId) {
 		 UserDto user = new UserDto();
 		 user.setUserId(userId);
-		 user.setUserThumbnailFileUrl(uploadThumbnailFileUrl);
+		 user.setUserThumbnailFileUrl(uploadThumbnailFileUrl.replaceAll("\"", ""));
 	      memberService.updateUserThumbnail(user);
 		return new ResponseEntity<>(HttpStatus.OK);
 	  }

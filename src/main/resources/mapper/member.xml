@@ -25,7 +25,7 @@
 		</where>
 	</sql>
 	<sql id="userDetailSelect">
-	select user_id,user_name,user_nickname,user_exp,user_email_id,user_email_domain,description,guild_id from members
+	select user_id,user_name,user_nickname,user_exp,user_email_id,user_email_domain,description,guild_id,user_thumbnail_file_url from members
 	</sql>
 <select id="selectOneUser" parameterType="String" resultMap="userDtoMap">
 	<include refid="userDetailSelect"></include>
