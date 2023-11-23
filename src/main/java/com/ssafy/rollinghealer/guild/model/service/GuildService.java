@@ -36,5 +36,7 @@ public interface GuildService {
 
 	List<UserDto> guildMemberList(int guildId);
 
+	void updateGuildThumbnail(GuildDto guildDto);
+
 
 }

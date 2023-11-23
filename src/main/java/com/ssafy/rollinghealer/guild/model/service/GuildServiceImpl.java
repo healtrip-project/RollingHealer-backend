@@ -3,6 +3,7 @@ package com.ssafy.rollinghealer.guild.model.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.rollinghealer.guild.model.GuildDto;
 import com.ssafy.rollinghealer.guild.model.GuildPostDto;
@@ -19,6 +20,7 @@ public class GuildServiceImpl implements GuildService {
 	}
 
 	@Override
+	@Transactional
 	public void makeGuild(GuildDto guildDto) {
 		guildMapper.insertGuild(guildDto);
 		int guildId = guildDto.getGuildId();
@@ -87,6 +89,7 @@ public class GuildServiceImpl implements GuildService {
 	}
 
 	@Override
+	@Transactional
 	public void joinGuild(int guildId, String userId) {
 		// TODO Auto-generated method stub
 		try {
@@ -101,6 +104,10 @@ public class GuildServiceImpl implements GuildService {
 	public List<UserDto> guildMemberList(int guild) {
 		return guildMapper.guildMemberList(guild);
 	}
+	@Override
+	 public void updateGuildThumbnail(GuildDto guildDto) {
+	       guildMapper.guildThumbnailImageUpdate(guildDto);
+	   }
 
 
 	

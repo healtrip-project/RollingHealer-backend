@@ -6,8 +6,8 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -119,6 +119,17 @@ public class GuildController {
 		guildService.deleteGuildPost(guildPostDto);
 		return ResponseEntity.ok("OK");
 	}
+	@PostMapping("{guildAlias}/uploadthumbnail")
+	   public void updateGuildThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("guildAlias") String guildAlias ) {
+		System.out.println((GuildDto.builder()
+	    		   .guildThumbnailFileUrl(uploadThumbnailFileUrl)
+	    		   .guildAlias(guildAlias)
+	    		   .build()));
+	       guildService.updateGuildThumbnail(GuildDto.builder()
+	    		   .guildThumbnailFileUrl(StringUtils.cleanPath(uploadThumbnailFileUrl.replaceAll("\"", "")))
+	    		   .guildAlias(guildAlias)
+	    		   .build());
+	   }
 	
 	
 	

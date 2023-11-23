@@ -14,6 +14,7 @@
 		<result column="is_delete" property="isDelete" />
 		<result column="delete_at" property="deleteAt" />
 		<result column="user_count" property="userCount" />
+		<result column="guild_thumbnail_file_url" property="guildThumbnailFileUrl" />
 		<result column="guild_manager" property="guildManager" />
 		<result column="delete_by" property="deleteBy" />
 	</resultMap>
@@ -90,24 +91,17 @@
 	</insert>
 
 	<select id="selectGuild" resultMap="guildResultMap">
-		select 
-			guild_id,
-			guild_alias, 
-			guild_name, 
-			description,
-			goal, 
-			create_by, 
-			create_at, 
-			user_count,
-			guild_manager
+		SELECT 
+			*
 		from guild
 		where is_delete = 0
-		order by create_at desc
+		order by create_at DESC
 	</select>
 
 	<select id="selectByOneGuild" resultMap="guildResultMap">
 		select 
-			guild_id,
+		*
+			<!-- guild_id,
 			guild_alias,
 			guild_name, 
 			description,
@@ -115,7 +109,7 @@
 			create_by, 
 			create_at, 
 			user_count, 
-			guild_manager
+			guild_manager -->
 		from guild
 		<include refid="whereGuildAlias"/>
 	</select>
@@ -219,7 +213,7 @@
 	    WHERE user_id = #{userId}
 	</update>
 
-	<update id="incrementGuildUserCount">
+	<update id="incrementGuildUserCount" parameterType="int">
 	    UPDATE guild
 	    SET user_count = user_count + 1
 	    WHERE guild_id = #{guildId}
@@ -230,5 +224,10 @@
 		from members
 		where guild_id = #{guildId}
 	</select>
+	<update id="guildThumbnailImageUpdate" parameterType="guildDto">
+		UPDATE guild
+	    SET guild_thumbnail_file_url = #{guildThumbnailFileUrl}
+	    WHERE guild_alias = #{guildAlias}
+	</update>
 	
 </mapper>

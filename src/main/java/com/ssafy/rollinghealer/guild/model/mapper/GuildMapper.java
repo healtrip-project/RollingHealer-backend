@@ -37,5 +37,7 @@ public interface GuildMapper {
     void incrementGuildUserCount(int guildId);
 
 	List<UserDto> guildMemberList(int guildId);
+	
+	void guildThumbnailImageUpdate(GuildDto guildDto);
 
 }

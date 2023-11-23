@@ -28,5 +28,8 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return user;
 	}
-
+	@Override
+	public void updateUserThumbnail(UserDto userDto) {
+	      memberMapper.updateUserThumbnail(userDto);
+  }
 }

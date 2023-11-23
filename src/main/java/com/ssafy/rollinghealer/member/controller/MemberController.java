@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/user")
 public class MemberController {
 	private final AuthService authService;
-	private final MemberService memberSerive;
+	private final MemberService memberService;
 	@GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request){
     	
@@ -55,9 +56,17 @@ public class MemberController {
 	@GetMapping("/{userId}")
 	public ResponseEntity<UserDto> userDetail(@PathVariable("userId") String userId, HttpServletRequest request) throws Exception{
 		
-		UserDto userInfo=memberSerive.userInfo(userId);
+		UserDto userInfo=memberService.userInfo(userId);
 		
 		return new ResponseEntity<UserDto>(userInfo,HttpStatus.OK);
 	}
+	
+	@PostMapping("/{userId}/uploadthumbnail")
+	  public void updateUserThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("userId") String userId) {
+	      memberService.updateUserThumbnail(UserDto.builder()
+	    		  .userId(userId)
+	    		  .userThumbnailFileUrl(uploadThumbnailFileUrl)
+	    		  .build());
+	  }
 	
 }
