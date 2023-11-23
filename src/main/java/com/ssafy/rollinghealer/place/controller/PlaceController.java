@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class PlaceController {
 	private final PlaceService placeService;
 	@GetMapping("/admin/fetchdata")
-	public ResponseEntity<?> fetchData(@RequestParam(name = "numOfRows",defaultValue = "5") int num,@RequestParam(name="sidocode",defaultValue = "1") String sidoCode, @RequestParam(name="page",defaultValue="1") int page){
+	public ResponseEntity<?> fetchData(@RequestParam(name = "numOfRows",defaultValue = "5") int num,@RequestParam(name="sidocode",defaultValue = "1")  String sidoCode,@RequestParam(name="content_type_id",defaultValue = "0")  String content_type_id, @RequestParam(name="page",defaultValue="1") int page){
 		
 		AreaBasedList1ApiQueryParams query = AreaBasedList1ApiQueryParams.builder()
 				.numOfRows(num)
@@ -40,7 +40,7 @@ public class PlaceController {
 				._type("json")
 				.listYN("Y")
 				.pageNo(page)
-				.contentTypeId("")
+				.contentTypeId(content_type_id)
 				.areaCode(sidoCode)
 				.build();
 		try {
@@ -82,8 +82,8 @@ public class PlaceController {
 		
 	@GetMapping("/search")
 	public ResponseEntity<List<PlaceInfoDto>> searchPlaceInfoList(@ModelAttribute PlaceSearchDto placeSearchDto) {
-		placeSearchDto.setSize(SizeConstant.LIST_SIZE*5);
-		placeSearchDto.setStart(0);
+		placeSearchDto.setSize(SizeConstant.LIST_SIZE*3);
+		placeSearchDto.setStart(SizeConstant.LIST_SIZE*3*(placeSearchDto.getPage()==null?0:placeSearchDto.getPage()));
 		List<PlaceInfoDto> placeInfoDtoList = placeService.searchPlaceInfoList(placeSearchDto);
 		return ResponseEntity.ok(placeInfoDtoList);
 	}

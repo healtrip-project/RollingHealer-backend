@@ -28,7 +28,7 @@
  	<!--  
  		<association property="extra_info"  autoMapping="true" column="content_id" notNullColumn="is_custom_info" javaType="placeInfoExtraDto" select="selectOnePlaceInfoExtra"/>
 	-->
- 		<association property="extra_info" javaType="placeInfoExtraDto" columnPrefix="extra_" >
+ 		<association property="extra_info" javaType="placeInfoExtraDto" autoMapping="false" notNullColumn="content_id" columnPrefix="extra_" >
 	 	<id property="content_id" column="content_id"/>
 		  <result property="description" column="description"/>
 		  <result property="create_by" column="create_by"/>
@@ -200,7 +200,7 @@
        <if test="title != null and title != ''">
            AND ${alias1}title LIKE CONCAT('%', #{title}, '%')
        </if>
-       <if test="content_type_id != null">
+       <if test="content_type_id != null and content_type_id != 0 and content_type_id != ''">
            AND ${alias1}content_type_id = #{content_type_id}
        </if>
        <if test="sidocode != null and sidocode !=0">
