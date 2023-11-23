@@ -62,11 +62,12 @@ public class MemberController {
 	}
 	
 	@PostMapping("/{userId}/uploadthumbnail")
-	  public void updateUserThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("userId") String userId) {
-	      memberService.updateUserThumbnail(UserDto.builder()
-	    		  .userId(userId)
-	    		  .userThumbnailFileUrl(uploadThumbnailFileUrl)
-	    		  .build());
+	  public ResponseEntity<?> updateUserThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("userId") String userId) {
+		 UserDto user = new UserDto();
+		 user.setUserId(userId);
+		 user.setUserThumbnailFileUrl(uploadThumbnailFileUrl);
+	      memberService.updateUserThumbnail(user);
+		return new ResponseEntity<>(HttpStatus.OK);
 	  }
 	
 }

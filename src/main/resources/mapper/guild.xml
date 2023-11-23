@@ -88,6 +88,9 @@
 			#{createdBy},
 			#{guildManager}
 		)
+		<selectKey keyColumn="guild_id" keyProperty="guildId" resultType="int">
+			select last_insert_id() as guild_id
+		</selectKey>
 	</insert>
 
 	<select id="selectGuild" resultMap="guildResultMap">
@@ -207,10 +210,10 @@
 	</update>
 	
 	<!-- guild join -->
-	<update id="updateMemberGuild">
+	<update id="updateMemberGuild" parameterType="Map">
 	    UPDATE members 
-	    SET guild_id = #{guildId} 
-	    WHERE user_id = #{userId}
+	    SET guild_id = #{user.guildId} 
+	    WHERE user_id = #{user.userId}
 	</update>
 
 	<update id="incrementGuildUserCount" parameterType="int">

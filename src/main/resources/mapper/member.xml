@@ -32,7 +32,7 @@
 	<include refid="whereUserId"></include>
 </select>
 <update id="updateUserThumbnail" parameterType="userDto">
-   UPDATE user
+   UPDATE members
    SET user_thumbnail_file_url = #{userThumbnailFileUrl}
    WHERE user_id = #{userId}
 </update>

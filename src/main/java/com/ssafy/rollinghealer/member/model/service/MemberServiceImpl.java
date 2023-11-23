@@ -19,15 +19,17 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public UserDto userInfo(String userId) throws Exception {
 		UserDto user=null;
-		if(SecurityContextHolder.getContext().getAuthentication().getName().equals(userId)) {
-			user=memberMapper.selectOneUser(userId);
-		}
+//		if(SecurityContextHolder.getContext().getAuthentication().getName().equals(userId)) {
+//			user=memberMapper.selectOneUser(userId);
+//		}
+		user=memberMapper.selectOneUser(userId);
 		if(user==null) {
 			log.error("유저 정보없음");
 			throw new Exception("유저 정보없음");
 		}
 		return user;
 	}
+	
 	@Override
 	public void updateUserThumbnail(UserDto userDto) {
 	      memberMapper.updateUserThumbnail(userDto);

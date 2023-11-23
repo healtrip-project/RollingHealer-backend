@@ -120,7 +120,7 @@ public class GuildController {
 		return ResponseEntity.ok("OK");
 	}
 	@PostMapping("{guildAlias}/uploadthumbnail")
-	   public void updateGuildThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("guildAlias") String guildAlias ) {
+	   public ResponseEntity<?> updateGuildThumbnail(@RequestBody String uploadThumbnailFileUrl, @PathVariable("guildAlias") String guildAlias ) {
 		System.out.println((GuildDto.builder()
 	    		   .guildThumbnailFileUrl(uploadThumbnailFileUrl)
 	    		   .guildAlias(guildAlias)
@@ -129,6 +129,7 @@ public class GuildController {
 	    		   .guildThumbnailFileUrl(StringUtils.cleanPath(uploadThumbnailFileUrl.replaceAll("\"", "")))
 	    		   .guildAlias(guildAlias)
 	    		   .build());
+	       return new ResponseEntity<>(HttpStatus.OK);
 	   }
 	
 	

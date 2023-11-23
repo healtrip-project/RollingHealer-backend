@@ -14,6 +14,7 @@ import lombok.ToString;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlaceInfoDto {
+	@JsonProperty("contentid")
 	private String content_id;
 	private String title;
 	private String addr1;
@@ -41,7 +42,6 @@ public class PlaceInfoDto {
 	private String update_date;
 	@JsonProperty("createdtime")
 	private String create_date;
-	@JsonProperty("contentid")
 	private int is_custom;
 	@JsonProperty("sigungucode")
 	private int sigungucode;

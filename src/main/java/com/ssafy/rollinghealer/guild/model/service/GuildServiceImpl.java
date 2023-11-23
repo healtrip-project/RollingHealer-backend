@@ -1,6 +1,8 @@
 package com.ssafy.rollinghealer.guild.model.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,10 @@ public class GuildServiceImpl implements GuildService {
 		System.out.println("////////");
 		System.out.println(guildId + " " + userId);
 		try {
-			guildMapper.updateMemberGuild(guildId, userId);
+			Map<String,Object> user = new HashMap<>();
+			user.put("guildId", guildId);
+			user.put("userId", userId);
+			guildMapper.updateMemberGuild(user);
 			guildMapper.incrementGuildUserCount(guildId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,7 +98,10 @@ public class GuildServiceImpl implements GuildService {
 	public void joinGuild(int guildId, String userId) {
 		// TODO Auto-generated method stub
 		try {
-			guildMapper.updateMemberGuild(guildId, userId);
+			Map<String,Object> user = new HashMap<>();
+			user.put("guildId", guildId);
+			user.put("userId", userId);
+			guildMapper.updateMemberGuild(user);
 			guildMapper.incrementGuildUserCount(guildId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -107,6 +115,7 @@ public class GuildServiceImpl implements GuildService {
 	@Override
 	 public void updateGuildThumbnail(GuildDto guildDto) {
 	       guildMapper.guildThumbnailImageUpdate(guildDto);
+	       
 	   }
 
 

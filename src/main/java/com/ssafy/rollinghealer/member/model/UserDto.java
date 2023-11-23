@@ -8,7 +8,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Builder
 public class UserDto {
     private int idx;
     private String userId;
