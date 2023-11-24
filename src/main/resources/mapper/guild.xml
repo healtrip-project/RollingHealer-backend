@@ -212,8 +212,8 @@
 	<!-- guild join -->
 	<update id="updateMemberGuild" parameterType="Map">
 	    UPDATE members 
-	    SET guild_id = #{user.guildId} 
-	    WHERE user_id = #{user.userId}
+	    SET guild_id = #{guildId} 
+	    WHERE user_id = #{userId}
 	</update>
 
 	<update id="incrementGuildUserCount" parameterType="int">
