@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.rollinghealer.auth.model.mapper.AuthMapper">
+
+<resultMap type="userAuthDto" id="userAuthDtoMap">
+    <result property="userId" column="user_id"/>
+    <result property="password" column="user_password"/>
+    <result property="grade" column="grade"/>
+    <result property="isDelete" column="is_delete"/>
+</resultMap>
+<resultMap type="refreshTokenAuthDto" id="refreshTokenAuthDtoMap">
+	<result property="userId" column="user_id"/>
+	<result property="refreshToken" column="refresh_token"/>
+	<result property="expirationDate" column="expiration_date"/>
+</resultMap>
+	<sql id="whereFindRefreshToken">
+		<where>
+		<if test="userId !=null and userId !=''">
+			and user_id=#{userId}
+		</if>
+			and refresh_token = #{refreshToken}
+		</where>
+	</sql>
+	<sql id="whereUserId">
+		<where>
+		and user_id =#{userId}
+		</where>
+	</sql>
+	<select id="selectOneRefreshToekn" parameterType="refreshTokenAuthDto" resultType="int">
+		select count(*) from member_refresh_token 
+		<include refid="whereFindRefreshToken"/>
+	</select>
+
+	<select id="selectOneAuthenticationByUserName" parameterType="String" resultMap="userAuthDtoMap">
+		select user_id,user_password,grade, is_delete from members 
+		<include refid="whereUserId"/>
+	</select>
+	
+	<insert id="insertRefreshToken" parameterType="refreshTokenAuthDto">
+		insert into member_refresh_token (user_id,refresh_token,expiration_date)
+		values(#{userId},#{refreshToken},#{expirationDate})
+	</insert>
+	
+	<insert id="insertUser" parameterType="userDto">
+	    INSERT INTO members (user_id, user_password, user_name, user_nickname, user_email_id, user_email_domain)
+	    VALUES (#{userId}, #{userPassword}, #{userName}, #{userNickname}, #{userEmailId}, #{userEmailDomain})
+	</insert>
+	
+	<delete id="deleteOneRefreshToken" parameterType="refreshTokenAuthDto">
+		delete from member_refresh_token
+		<include refid="whereFindRefreshToken"/>
+	</delete>
+</mapper>

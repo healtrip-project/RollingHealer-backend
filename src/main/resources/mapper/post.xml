@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ssafy.rollinghealer.post.model.mapper.PostMapper">
+
+	<resultMap id="postResultMap" type="postDto">
+		<id column="post_id" property="postId" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+		<result column="create_by" property="createBy" />
+		<result column="create_at" property="createAt" />
+		<result column="is_delete" property="isDelete" />
+		<result column="is_usefile" property="isUseFile" />
+		<result column="is_plan" property="isPlan" />
+		<result column="update_at" property="updateAt" />
+		<result column="delete_at" property="deleteAt" />
+		<result column="post_type" property="postType" />
+	</resultMap>
+
+
+	<insert id="createPost" parameterType="postDto">
+		INSERT INTO post (
+			title, content, is_usefile, create_by
+		) VALUES (	
+			#{title}, #{content}, #{isUseFile}, #{createBy}
+		)
+    </insert>
+
+	
+	<select id="getAllPosts" resultMap="postResultMap">
+        SELECT * 
+        FROM post 
+        WHERE is_delete = 0
+        order by create_at desc
+    </select>
+    
+    <select id="getAllPostsByGuildId" resultMap="postResultMap">
+	    SELECT p.*, m.user_id AS create_by
+	    FROM post p
+	    JOIN members m ON p.create_by = m.user_id
+	    WHERE p.is_delete = 0
+	    AND m.guild_id = #{guildId}
+	    ORDER BY p.create_at DESC
+	</select>
+
+	
+	 <select id="getPostById" resultMap="postResultMap">
+        SELECT * 
+        FROM post 
+        WHERE 
+        	post_id = #{postId} AND is_delete = 0
+    </select>
+
+    <update id="updatePost" parameterType="postDto">
+        UPDATE post 
+        SET 
+        	title = #{title}, 
+        	content = #{content}, 
+        	update_at = NOW() 
+       	WHERE post_id = #{postId}
+    </update>
+	
+	<update id="deletePost" parameterType="int">
+        UPDATE post 
+        SET 
+        	is_delete = 1, 
+        	delete_at = NOW() 
+       	WHERE post_id = #{postId}
+    </update>
+	
+</mapper>

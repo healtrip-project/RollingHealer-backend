@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.rollinghealer.member.model.mapper.MemberMapper">
+<resultMap id="userDtoMap" type="userDto">
+    <id property="idx" column="idx"/>
+    <result property="userId" column="user_id"/>
+    <result property="userPassword" column="user_password"/>
+    <result property="userName" column="user_name"/>
+    <result property="userNickname" column="user_nickname"/>
+    <result property="grade" column="grade"/>
+    <result property="userExp" column="user_exp"/>
+    <result property="userThumbnailFileUrl" column="user_thumbnail_file_url"/>
+    <result property="isDelete" column="is_delete"/>
+    <result property="updatedAt" column="update_at"/>
+    <result property="createdAt" column="create_at"/>
+    <result property="userEmailId" column="user_email_id"/>
+    <result property="userEmailDomain" column="user_email_domain"/>
+    <result property="description" column="description"/>
+    <result property="guildId" column="guild_id"/>
+</resultMap>
+<sql id="whereUserId">
+		<where>
+		and user_id =#{userId}
+		</where>
+	</sql>
+	<sql id="userDetailSelect">
+	select user_id,user_name,user_nickname,user_exp,user_email_id,user_email_domain,description,guild_id,user_thumbnail_file_url from members
+	</sql>
+<select id="selectOneUser" parameterType="String" resultMap="userDtoMap">
+	<include refid="userDetailSelect"></include>
+	<include refid="whereUserId"></include>
+</select>
+<select id="selectUserList"  resultMap="userDtoMap">
+<include refid="userDetailSelect"></include>
+</select>
+<update id="updateUserThumbnail" parameterType="userDto">
+   UPDATE members
+   SET user_thumbnail_file_url = #{userThumbnailFileUrl}
+   WHERE user_id = #{userId}
+</update>
+</mapper>

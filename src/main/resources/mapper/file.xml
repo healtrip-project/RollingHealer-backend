@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+	
+<mapper namespace="com.ssafy.rollinghealer.file.model.mapper.FileMapper" >
+<resultMap type="FileInfoDto" id="FileInfoDtoMap">
+  <result column="file_idx" property="fileIdx" />
+  <result column="upload_by" property="uploadBy" />
+  <result column="file_group_id" property="fileGroupId" />
+  <result column="file_originname" property="fileOriginName" />
+  <result column="file_name" property="fileName" />
+  <result column="file_type" property="fileType" />
+  <result column="create_at" property="createAt" />
+  <result column="file_size" property="fileSize" />
+  <result column="is_img" property="isImg" />
+  <result column="upload_path" property="uploadPath" />
+  <result column="is_delete" property="isDelete" />
+  <result column="delete_at" property="deleteAt" />
+</resultMap>
+
+<insert id="insertFileInfo" parameterType="fileInfoDto" >
+ INSERT INTO file_info (
+   upload_by, 
+   file_group_id, 
+   file_originname, 
+   file_name, 
+   file_type, 
+   file_size, 
+   is_img, 
+   upload_path
+ ) VALUES (
+ 
+    #{uploadBy}, #{fileGroupId}, #{fileOriginName}, #{fileName}, #{fileType}, #{fileSize}, #{isImg}, #{uploadPath}
+ )
+ <selectKey keyProperty="fileIdx" keyColumn="file_idx" order="AFTER" resultType="int">
+ 	select last_insert_id() as file_idx
+ </selectKey>
+</insert>
+
+<sql id="whereSearchFileInfoList">
+	<where>
+		<if test="uploadBy != null">
+		   AND upload_by = #{uploadBy}
+		 </if>
+	 <if test="isImg != null">
+	   AND is_img = #{isImg}
+	 </if>
+	 <if test="isDelete != null">
+	   AND is_delete = #{isDelete}
+	 </if>
+	 <if test="fileOriginName != null">
+	   AND file_originname = #{fileOriginName}
+	 </if>
+	</where>
+</sql>
+
+<select id="selectFileInfoList" parameterType="fileSearchDto" resultMap="FileInfoDtoMap">
+ SELECT * FROM file_info
+ <include refid="whereSearchFileInfoList"></include>
+</select>
+
+<select id="selectOneFileInfo" parameterType="String" resultMap="FileInfoDtoMap">
+ SELECT * FROM file_info
+ WHERE file_name = #{fileName}
+</select>
+
+</mapper>

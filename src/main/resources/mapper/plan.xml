@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.rollinghealer.plan.model.mapper.PlanMapper">
+<resultMap id="planDtoResult" type="planDto">
+   <id property="planId" column="plan_id"/>
+   <result property="planTitle" column="plan_title"/>
+   <result property="startDate" column="start_date"/>
+   <result property="createBy" column="create_by"/>
+   <result property="itemCount" column="item_count"/>
+   <result property="isDelete" column="is_delete"/>
+   <result property="deleteAt" column="delete_at"/>
+   <result property="createAt" column="create_at"/>
+   <result property="isPublic" column="is_public"/>
+   <collection property="planItemList" column="plan_id" columnPrefix="item_" javaType="list" ofType="planItemDto">
+   	<id property="planItemIdx" column="plan_item_idx"/>
+   	<result property="contentId" column="content_id"/>
+   	<result property="planId" column="plan_id"/>
+   	<result property="memo" column="memo"/>
+   	<result property="order" column="plan_item_order"/>
+   </collection>
+</resultMap>
+
+<resultMap id="planItemDtoResult" type="planItemDto">
+   <id property="planItemIdx" column="plan_item_idx"/>
+   <result property="contentId" column="content_id"/>
+   <result property="planId" column="plan_id"/>
+   <result property="memo" column="memo"/>
+   <result property="order" column="plan_item_order"/>
+</resultMap>
+
+<sql id="setUpdatePlan">
+<set>
+           <if test="planTitle != null and planTitle !==''">plan_title = #{planTitle},</if>
+           <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+           <if test="isPublic != null">is_public = #{isPublic},</if>
+       </set>
+</sql>
+
+<sql id="whereSearchPlanDtoList">
+<where>
+       <if test="createBy != null and createBy !=''">
+           AND ${alias1}create_by = #{createBy}
+       </if>
+       <if test="isPublic != null">
+           AND ${alias1}is_public = #{isPublic}
+       </if>
+       <if test="isDelete != null">
+           AND ${alias1}is_public = #{isPublic}
+       </if>
+       <if test="planTitle != null and planTitle != ''">
+      	   AND ${alias1}plan_title = LIKE CONCAT('%', #{planTitle}, '%')
+       </if>
+       <if test="startDate != null and startDate !=''">
+           AND ${alias1}start_date &gt;= #{startDate}
+       </if>
+   </where>
+</sql>
+
+<select id="selectOnePlan" parameterType="int" resultMap="planDtoResult">
+  SELECT 
+	  p.plan_id, 
+	  p.plan_title, 
+	  p.start_date, 
+	  p.create_by, 
+	  p.item_count, 
+	  p.is_delete, 
+	  p.delete_at, 
+	  p.create_at, 
+	  p.is_public,
+	  pi.plan_item_idx as item_plan_item_idx,
+	  pi.content_id as item_content_id, 
+	  pi.plan_id as item_plan_id, 
+	  pi.memo as item_memo, 
+	  pi.order as item_order
+  FROM plan p
+  LEFT JOIN plan_item pi
+  ON p.plan_id = pi.content_id
+  WHERE p.plan_id = #{planId}
+</select>
+
+<select id="selectOnePlanItem" parameterType="int" resultMap="planItemDtoResult">
+  SELECT 
+	  p.plan_id, 
+	  p.plan_title, 
+	  p.start_date, 
+	  p.create_by, 
+	  p.item_count, 
+	  p.is_delete, 
+	  p.delete_at, 
+	  p.create_at, 
+	  p.is_public,
+	  pi.plan_item_idx as item_plan_item_idx,
+	  pi.content_id as item_content_id, 
+	  pi.plan_id as item_plan_id, 
+	  pi.memo as item_memo, 
+	  pi.plan_item_order as item_order
+  FROM plan p
+  LEFT JOIN plan_item pi
+  ON p.plan_id = pi.content_id
+  WHERE p.plan_id = #{planId}
+</select>
+
+<select id="selectPlanList" parameterType="planSearchDto" resultMap="planItemDtoResult">
+SELECT 
+	  p.plan_id, 
+	  p.plan_title, 
+	  p.start_date, 
+	  p.create_by, 
+	  p.item_count, 
+	  p.is_delete, 
+	  p.delete_at, 
+	  p.create_at, 
+	  p.is_public,
+	  pi.plan_item_idx as item_plan_item_idx,
+	  pi.content_id as item_content_id, 
+	  pi.plan_id as item_plan_id, 
+	  pi.memo as item_memo, 
+	  pi.plan_item_order as item_order
+  FROM plan p
+  LEFT JOIN plan_item pi
+  ON p.plan_id = pi.plan_id
+  <include refid="whereSearchPlanDtoList">
+  	<property name="alias1" value="p."/>
+<!--   	<property name="alias2" value="pi."/> -->
+  </include>
+</select>
+
+<insert id="insertPlan" parameterType="PlanDto">
+       INSERT INTO plan ( plan_title, start_date, create_by, item_count, is_public)
+       VALUES ( #{planTitle}, #{startDate}, #{createBy}, #{itemCount}, #{isPublic})
+       <selectKey keyProperty="planId" keyColumn="plan_key" resultType="int">
+       	select last_insert_id() as plan_key
+       </selectKey>
+   </insert>
+
+   <insert id="insertPlanItem" parameterType="PlanItemDto">
+       INSERT INTO plan_item ( content_id, plan_id, memo, plan_item_order)
+       VALUES ( #{contentId}, #{planId}, #{memo}, #{order})
+   </insert>
+
+   <update id="updatePlan" parameterType="PlanDto">
+       UPDATE plan
+       <include refid="setUpdatePlan"></include>
+       WHERE plan_id = #{planId}
+   </update>
+
+<insert id="insertPlanItemList" parameterType="PlanDto" >
+
+      INSERT INTO plan_item ( content_id, plan_id, memo, plan_item_order )
+      VALUES 
+  <foreach collection="planItemList" item="planItemDto" index="index" separator=",">
+  (
+   #{planItemDto.contentId}
+  ,#{planId} 
+  ,#{planItemDto.memo} 
+  ,#{planItemDto.order}
+  ) 
+  </foreach>
+</insert>
+
+<delete id="deletePlan" parameterType="PlanDto">
+   DELETE FROM plan WHERE plan_id = #{planId}
+</delete>
+
+<delete id="deletePlanItem" parameterType="PlanItemDto">
+   DELETE FROM plan_item WHERE plan_item_idx = #{planItemIdx}
+</delete>
+</mapper>
